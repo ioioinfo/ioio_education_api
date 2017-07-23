@@ -8,7 +8,18 @@ exports.register = function(server, options, next){
         server.expose(key, model);
     };
 
-    // load_model('app_function', './app_function.js');
+    load_model('classes', './classes.js');
+    load_model('class_infos', './class_infos.js');
+    load_model('students', './students.js');
+    load_model('teachers', './teachers.js');
+    load_model('lesson_plans', './lesson_plans.js');
+    load_model('lessons', './lessons.js');
+    load_model('learning_task', './learning_task.js');
+    load_model('learning_record', './learning_record.js');
+    load_model('dicussions', './dicussions.js');
+    load_model('feedbacks', './feedbacks.js');
+
+
 
 
   next();
