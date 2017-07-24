@@ -78,8 +78,52 @@ exports.register = function(server, options, next) {
                 });
             }
         },
+        //学员添加，批量
+        {
+			method: 'POST',
+			path: '/save_student',
+			handler: function(request, reply){
+                var students = request.payload.students;
+                students = JSON.parse(students);
+                if (students.length==0) {
+                    return reply({"success":false,"message":"students wrong","service_info":service_info});
+                }
 
-
+                // var student = {
+                //     "name" : "呵呵",
+                //     "code" : "002",
+                //     "age" : "8岁",
+                //     "sex" : "男",
+                //     "phone" : "13829839233",
+                //     "state" : "已报名",
+                //     "address" : "无边大厦",
+                //     "province" : "北京",
+                //     "city" : "北京",
+                //     "district" : "朝阳区",
+                //     "photo" : "无",
+                //     "level_id" : 1
+                // };
+                // var students = [];
+                // students.push(student);
+                var save_fail = [];
+				var save_success = [];
+                async.each(students, function(student, cb) {
+                    server.plugins['models'].students.save_student(student,function(err,result){
+    					if (result.affectedRows>0) {
+                            save_success.push(student.name);
+                            cb();
+    					}else {
+                            console.log(content.message);
+                            save_fail.push(student.name);
+                            cb();
+    					}
+    				});
+                }, function(err) {
+                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
+                });
+			}
+		},
+        
     ]);
 
     next();
