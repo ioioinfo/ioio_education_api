@@ -40,7 +40,7 @@ var do_result = function(err,result,cb){
 exports.register = function(server, options, next) {
 
     server.route([
-        //查询学员
+        //查询学员列表
         {
             method: "GET",
             path: '/get_students',
@@ -56,7 +56,7 @@ exports.register = function(server, options, next) {
                         }
 					return reply({"success":true,"rows":rows,"service_info":service_info});
 				});
-                //查询所有班级
+                //查询学员
                 server.plugins['models'].students.get_students(function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
@@ -123,7 +123,95 @@ exports.register = function(server, options, next) {
                 });
 			}
 		},
-        
+        //删除班级
+        {
+            method: 'POST',
+            path: '/delete_student',
+            handler: function(request, reply){
+                var id = request.payload.id;
+                if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
+
+                server.plugins['models'].students.delete_student(id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+            }
+        },
+        //根据id查学员
+        {
+            method: "GET",
+            path: '/search_student_byId',
+            handler: function(request, reply) {
+                var id = request.query.id;
+                var ep =  eventproxy.create("rows", "grades",
+					function(rows, grades){
+                        // for (var i = 0; i < rows.length; i++) {
+                        //     var row = rows[i];
+                        //     if (grades[row.level_id]) {
+                        //         row.level = grades[row.level_id];
+                        //     }
+                        // }
+					return reply({"success":true,"rows":rows,"grades":grades,"service_info":service_info});
+				});
+                //查询学员
+                server.plugins['models'].students.search_student_byId(id,function(err,rows){
+                    if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+
+                        ep.emit("grades", rows);
+                    }else {
+                        ep.emit("grades", []);
+                    }
+                });
+            }
+        },
+        //更新学员信息
+        {
+            method: 'POST',
+            path: '/update_student',
+            handler: function(request, reply){
+                var student = request.payload.student;
+                student = JSON.parse(student);
+                if (!student.id || !student.name || !student.code || !student.age ||        !student.sex || !student.phone || !student.state ||!student.address || !student.province || !student.city || !student.district || !student.photo ||
+                !student.level_id) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+                var id = student.id;
+                var name = student.name;
+                var code = student.code;
+                var age = student.age;
+                var sex = student.sex;
+                var phone = student.phone;
+                var state = student.state;
+                var address = student.address;
+                var province = student.province;
+                var city = student.city;
+                var district = student.district;
+                var photo = student.photo;
+                var level_id = student.level_id;
+                server.plugins['models'].students.update_student(id, name, code,
+                    age, sex, phone, state, address, province, city, district, photo, level_id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+            }
+        },
+
     ]);
 
     next();
