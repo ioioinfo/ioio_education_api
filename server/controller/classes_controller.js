@@ -272,5 +272,5 @@ exports.register = function(server, options, next) {
 }
 
 exports.register.attributes = {
-    name: "education_controller"
+    name: "classes_controller"
 };

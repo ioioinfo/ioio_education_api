@@ -64,7 +64,9 @@ server.register([
     }, {
         register: require('./server/models/models.js')
     }, {
-        register: require('./server/controller/education_controller.js')
+        register: require('./server/controller/classes_controller.js')
+    },{
+        register: require('./server/controller/students_controller.js')
     },
 
 
