@@ -140,6 +140,51 @@ exports.register = function(server, options, next) {
                 });
             }
         },
+        //新增计划
+        {
+			method: 'POST',
+			path: '/save_plan',
+			handler: function(request, reply){
+                var name = request.payload.name;
+                var code = request.payload.code;
+                var level_id = request.payload.level_id;
+                if (!name || !code || !level_id) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+
+                server.plugins['models'].lesson_plans.save_plan(name, code, level_id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+
+			}
+		},
+        //更新老师信息
+        {
+            method: 'POST',
+            path: '/update_plan',
+            handler: function(request, reply){
+                var id = request.payload.id;
+                var name = request.payload.name;
+                var code = request.payload.code;
+                var level_id = request.payload.level_id;
+                if (!id||!name||!code||!level_id) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+
+                server.plugins['models'].lesson_plans.update_plan(id, name, code, level_id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+            }
+        },
+
 
     ]);
 
