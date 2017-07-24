@@ -2,7 +2,7 @@
 exports.register = function(server, options, next){
 
     server.expose('classes', require('./classes.js')(server));
-    server.expose('class_infos', require('./class_infos.js')(server));
+    server.expose('classes_infos', require('./classes_infos.js')(server));
     server.expose('students', require('./students.js')(server));
     server.expose('teachers', require('./teachers.js')(server));
     server.expose('lesson_plans', require('./lesson_plans.js')(server));

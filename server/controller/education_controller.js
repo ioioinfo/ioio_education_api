@@ -3,6 +3,7 @@ const uu_request = require('../utils/uu_request');
 const uuidV1 = require('uuid/v1');
 var eventproxy = require('eventproxy');
 var service_info = "4s_mp service";
+var async = require('async');
 
 var do_get_method = function(url,cb){
 	uu_request.get(url, function(err, response, body){
@@ -234,7 +235,36 @@ exports.register = function(server, options, next) {
                 });
             }
         },
+        //班级添加学员
+        {
+			method: 'POST',
+			path: '/add_students',
+			handler: function(request, reply){
+                var class_id = request.payload.class_id;
+                var student_ids = request.payload.student_ids;
+                student_ids = JSON.parse(student_ids);
 
+                if (!class_id || student_ids.length==0) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+                var save_fail = [];
+				var save_success = [];
+                async.each(student_ids, function(student_id, cb) {
+                    server.plugins['models'].classes_infos.add_students(class_id,student_id,function(err,result){
+    					if (result.affectedRows>0) {
+                            save_success.push(student_id);
+                            cb();
+    					}else {
+                            console.log(content.message);
+                            save_fail.push(invent);
+                            cb();
+    					}
+    				});
+                }, function(err) {
+                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
+                });
+			}
+		},
 
     ]);
 
