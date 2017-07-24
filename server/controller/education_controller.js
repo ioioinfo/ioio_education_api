@@ -44,16 +44,55 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/get_classes',
             handler: function(request, reply) {
+                var ep =  eventproxy.create("rows", "plans", "teachers",
+					function(rows, plans, teachers){
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            if (plans[row.plan_id]) {
+                                row.plan = plans[row.plan_id];
+                            }
+                            if (teachers[row.master_id]) {
+                                row.master = teachers[row.master_id];
+                            }
+                        }
+					return reply({"success":true,"rows":rows,"service_info":service_info});
+				});
+                //查询所有班级
                 server.plugins['models'].classes.get_classes(function(err,rows){
-					if (!err) {
-                       return reply({"success":true,"rows":rows,"service_info":service_info});
+                    if (!err) {
+						ep.emit("rows", rows);
 					}else {
-                        return reply({"success":false,"message":rows.message,"service_info":service_info});
+						ep.emit("rows", []);
+					}
+				});
+                //查询所有计划
+                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                    if (!err) {
+                        var plans_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							plans_map[rows[i].id] = rows[i];
+						}
+						ep.emit("plans", plans_map);
+					}else {
+						ep.emit("plans", {});
+					}
+				});
+                //查询所有老师
+                server.plugins['models'].teachers.get_teachers(function(err,rows){
+                    if (!err) {
+                        var teachers_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							teachers_map[rows[i].id] = rows[i];
+						}
+						ep.emit("teachers", teachers_map);
+					}else {
+						ep.emit("teachers", {});
 					}
 				});
             }
         },
 
+        
     ]);
 
     next();

@@ -5,9 +5,8 @@ var classes = function(server) {
 	return {
 		get_classes : function(cb){
             var query = `select id, plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, created_at, updated_at, flag
-            from classes
+            from classes where flag = 0
             `;
-			console.log("query:"+query);
             server.plugins['mysql'].query(query, function(err, results) {
                 if (err) {
                     console.log(err);
