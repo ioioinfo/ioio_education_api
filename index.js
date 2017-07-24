@@ -39,16 +39,6 @@ server.state('cookie', {
 
 // Export the server to be required elsewhere.
 module.exports = server;
-// db setting
-var db_options = {
-    connectionLimit: 10,
-    host: '211.149.248.241',
-    port: 3306,
-    user: 'uuinfo',
-    password: '123321',
-    database: 'ioio_education_web',
-    charset: 'utf8_general_ci'
-};
 
 /*
     Load all plugins and then start the server.
