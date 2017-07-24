@@ -40,8 +40,45 @@ var do_result = function(err,result,cb){
 exports.register = function(server, options, next) {
 
     server.route([
+        //查询学员
+        {
+            method: "GET",
+            path: '/get_students',
+            handler: function(request, reply) {
 
-        
+                var ep =  eventproxy.create("rows", "grades",
+					function(rows, grades){
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            if (grades[row.level_id]) {
+                                row.level = grades[row.level_id];
+                            }
+                        }
+					return reply({"success":true,"rows":rows,"service_info":service_info});
+				});
+                //查询所有班级
+                server.plugins['models'].students.get_students(function(err,rows){
+                    if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+                        var grades_map = {};
+                        for (var i = 0; i < rows.length; i++) {
+                            grades_map[rows[i].id] = rows[i];
+                        }
+                        ep.emit("grades", grades_map);
+                    }else {
+                        ep.emit("grades", {});
+                    }
+                });
+            }
+        },
+
 
     ]);
 
