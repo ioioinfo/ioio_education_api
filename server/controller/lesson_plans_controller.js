@@ -40,7 +40,106 @@ var do_result = function(err,result,cb){
 exports.register = function(server, options, next) {
 
     server.route([
+        //查询教学计划列表
+        {
+            method: "GET",
+            path: '/get_lesson_plans',
+            handler: function(request, reply) {
 
+                var ep =  eventproxy.create("rows", "grades",
+					function(rows, grades){
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            if (grades[row.level_id]) {
+                                row.level = grades[row.level_id];
+                            }
+                        }
+					return reply({"success":true,"rows":rows,"service_info":service_info});
+				});
+                //查询教学计划
+                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                    if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+                        var grades_map = {};
+                        for (var i = 0; i < rows.length; i++) {
+                            grades_map[rows[i].id] = rows[i];
+                        }
+                        ep.emit("grades", grades_map);
+                    }else {
+                        ep.emit("grades", {});
+                    }
+                });
+            }
+        },
+        //查询教学计划查询
+        {
+            method: "GET",
+            path: '/search_plan_byId',
+            handler: function(request, reply) {
+                var id = request.query.id;
+                if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
+                var ep =  eventproxy.create("rows", "grades","grades_level",
+					function(rows, grades, grades_level){
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            if (grades[row.level_id]) {
+                                row.level = grades[row.level_id];
+                            }
+                        }
+					return reply({"success":true,"rows":rows,"grades_level":grades_level,"service_info":service_info});
+				});
+                //查询教学计划
+                server.plugins['models'].lesson_plans.search_plan_byId(id,function(err,rows){
+                    if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+                        var grades_map = {};
+                        for (var i = 0; i < rows.length; i++) {
+                            grades_map[rows[i].id] = rows[i];
+                        }
+                        ep.emit("grades", grades_map);
+                        ep.emit("grades_level", rows);
+                    }else {
+                        ep.emit("grades", {});
+                        ep.emit("grades_level", []);
+                    }
+                });
+            }
+        },
+        //删除
+        {
+            method: 'POST',
+            path: '/delete_plan',
+            handler: function(request, reply){
+                var id = request.payload.id;
+                if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
+
+                server.plugins['models'].lesson_plans.delete_plan(id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+            }
+        },
 
     ]);
 

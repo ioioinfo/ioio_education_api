@@ -31,6 +31,20 @@ var lesson_plans = function(server) {
             });
         },
 
+		delete_plan:function(id, cb){
+			var query = `update lesson_plans set flag = 1, updated_at = now()
+				where id = ?
+				`;
+			server.plugins['mysql'].query(query, [id], function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
+
 	};
 };
 
