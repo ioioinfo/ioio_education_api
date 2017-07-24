@@ -1,11 +1,11 @@
 var _ = require('lodash');
 var EventProxy = require('eventproxy');
 
-var teachers_type = function(server) {
+var teachers_types = function(server) {
 	return {
 
 
 	};
 };
 
-module.exports = teachers_type;
+module.exports = teachers_types;

@@ -11,8 +11,8 @@ exports.register = function(server, options, next){
     server.expose('learning_record', require('./learning_record.js')(server));
     server.expose('dicussions', require('./dicussions.js')(server));
     server.expose('feedbacks', require('./feedbacks.js')(server));
-    server.expose('teachers_type', require('./teachers_type.js')(server));
-    server.expose('grade_level', require('./grade_level.js')(server));
+    server.expose('teachers_types', require('./teachers_types.js')(server));
+    server.expose('grade_levels', require('./grade_levels.js')(server));
 
 
   next();

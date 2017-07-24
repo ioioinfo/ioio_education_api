@@ -44,8 +44,8 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/get_classes',
             handler: function(request, reply) {
-                var ep =  eventproxy.create("rows", "plans", "teachers",
-					function(rows, plans, teachers){
+                var ep =  eventproxy.create("rows", "plans", "teachers", "grades",
+					function(rows, plans, teachers, grades){
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (plans[row.plan_id]) {
@@ -53,6 +53,9 @@ exports.register = function(server, options, next) {
                             }
                             if (teachers[row.master_id]) {
                                 row.master = teachers[row.master_id];
+                            }
+                            if (grades[row.level_id]) {
+                                row.level = grades[row.level_id];
                             }
                         }
 					return reply({"success":true,"rows":rows,"service_info":service_info});
@@ -89,10 +92,22 @@ exports.register = function(server, options, next) {
 						ep.emit("teachers", {});
 					}
 				});
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+                        var grades_map = {};
+                        for (var i = 0; i < rows.length; i++) {
+                            grades_map[rows[i].id] = rows[i];
+                        }
+                        ep.emit("grades", grades_map);
+                    }else {
+                        ep.emit("grades", {});
+                    }
+                });
             }
         },
 
-        
+
     ]);
 
     next();
