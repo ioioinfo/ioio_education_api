@@ -53,6 +53,43 @@ var teachers = function(server) {
 				cb(false,results);
 			});
 		},
+		//id查询老师
+		search_teacher_byId : function(id, cb){
+			var query = `select id, name, code, age, sex, phone, state, address,
+			province, city, district, created_at, photo,  updated_at, flag,
+			type_id, is_master, is_leader
+			from teachers where flag = 0 and id = ?
+			`;
+			server.plugins['mysql'].query(query,[id],function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
+		//更新信息
+		update_teacher:function(id, name, code, age, sex, phone, state, address,
+		province, city, district, photo, type_id, is_master, is_leader, cb){
+			var query = `update teachers set name =?, code =?, age =?, sex =?,
+			phone =?, state =?, address =?, province =?, city =?, district = ?,
+			photo = ?, type_id = ?, is_master = ?, is_leader =?, updated_at = now()
+			where id = ? and flag =0
+				`;
+			var coloums = [name, code, age, sex,
+				phone, state, address, province, city, district,
+				photo, type_id, is_master, is_leader, id];
+			server.plugins['mysql'].query(query, coloums, function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
+
 	};
 };
 

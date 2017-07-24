@@ -44,7 +44,7 @@ var classes = function(server) {
 				code =?, state =?, starting_date =?,
 				end_date =?, class_master =?, master_id =?, remarks =?,
 				level_id =?, updated_at = now()
-				where id = ?
+				where id = ? and flag = 0
                 `;
             var coloums = [plan_id, name, code, state, starting_date, end_date,      class_master, master_id, remarks, level_id, id
 			];

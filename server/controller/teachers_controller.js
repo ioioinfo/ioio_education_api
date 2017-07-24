@@ -144,6 +144,78 @@ exports.register = function(server, options, next) {
                 });
             }
         },
+        //根据id查询老师
+        {
+            method: "GET",
+            path: '/search_teacher_byId',
+            handler: function(request, reply) {
+                var id = request.query.id;
+                if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
+                var ep =  eventproxy.create("rows", "types",
+                    function(rows, types){
+                        // for (var i = 0; i < rows.length; i++) {
+                        //     var row = rows[i];
+                        //     if (types[row.type_id]) {
+                        //         row.level = types[row.type_id];
+                        //     }
+                        // }
+                    return reply({"success":true,"rows":rows,"types":types,"service_info":service_info});
+                });
+                //查询学员
+                server.plugins['models'].teachers.search_teacher_byId(id,function(err,rows){
+                    if (!err) {
+                        ep.emit("rows", rows);
+                    }else {
+                        ep.emit("rows", []);
+                    }
+                });
+                //查询所有年级
+                server.plugins['models'].teachers_types.get_teachers_types(function(err,rows){
+                    if (!err) {
+                        ep.emit("types", rows);
+                    }else {
+                        ep.emit("types", []);
+                    }
+                });
+            }
+        },
+        //更新老师信息
+        {
+            method: 'POST',
+            path: '/update_teacher',
+            handler: function(request, reply){
+                var teacher = request.payload.teacher;
+                teacher = JSON.parse(teacher);
+                if (!teacher.id||!teacher.name|| !teacher.code|| !teacher.age|| !teacher.sex|| !teacher.phone|| !teacher.state||!teacher.address|| !teacher.province|| !teacher.city|| !teacher.district|| !teacher.photo|| !teacher.type_id|| !teacher.is_master|| !teacher.is_leader) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+                var id = teacher.id;
+                var name = teacher.name;
+                var code = teacher.code;
+                var age = teacher.age;
+                var sex = teacher.sex;
+                var phone = teacher.phone;
+                var state = teacher.state;
+                var address = teacher.address;
+                var province = teacher.province;
+                var city = teacher.city;
+                var district = teacher.district;
+                var photo = teacher.photo;
+                var type_id = teacher.type_id;
+                var is_master = teacher.is_master;
+                var is_leader = teacher.is_leader;
+
+                server.plugins['models'].teachers.update_teacher(id, name, code, age, sex, phone, state, address, province, city, district, photo, type_id, is_master, is_leader, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+            }
+        },
 
     ]);
 

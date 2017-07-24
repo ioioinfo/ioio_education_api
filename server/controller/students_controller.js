@@ -148,6 +148,9 @@ exports.register = function(server, options, next) {
             path: '/search_student_byId',
             handler: function(request, reply) {
                 var id = request.query.id;
+				if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
                 var ep =  eventproxy.create("rows", "grades",
 					function(rows, grades){
                         // for (var i = 0; i < rows.length; i++) {

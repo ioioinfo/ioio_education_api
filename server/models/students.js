@@ -68,7 +68,7 @@ var students = function(server) {
 			var query = `update students set name = ?, code = ?, age = ?, sex = ?,
 			phone = ?, state = ?, address = ?, province = ?, city = ?, district = ?,
 			photo = ?, level_id = ?, updated_at = now()
-				where id = ?
+				where id = ? and flag =0
 				`;
 			var coloums = [name, code, age, sex, phone, state, address, province,
 				city, district, photo, level_id, id];
