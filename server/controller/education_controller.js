@@ -44,6 +44,7 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/get_classes',
             handler: function(request, reply) {
+
                 var ep =  eventproxy.create("rows", "plans", "teachers", "grades",
 					function(rows, plans, teachers, grades){
                         for (var i = 0; i < rows.length; i++) {
@@ -102,6 +103,133 @@ exports.register = function(server, options, next) {
                         ep.emit("grades", grades_map);
                     }else {
                         ep.emit("grades", {});
+                    }
+                });
+            }
+        },
+        //创建班级
+		{
+			method: 'POST',
+			path: '/save_class',
+			handler: function(request, reply){
+                var clas = request.payload.clas;
+                clas = JSON.parse(clas);
+                if (!clas.plan_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
+                || !clas.master_id || !clas.remarks || !clas.level_id) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+                var plan_id = clas.plan_id;
+                var name = clas.name;
+                var code = clas.code;
+                var state = clas.state;
+                var starting_date = clas.starting_date;
+                var end_date = clas.end_date;
+                var class_master = clas.class_master;
+                var master_id = clas.master_id;
+                var remarks = clas.remarks;
+                var level_id = clas.level_id;
+
+				server.plugins['models'].classes.save_class(plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
+					if (result.affectedRows>0) {
+						return reply({"success":true,"service_info":service_info});
+					}else {
+						return reply({"success":false,"message":result.message,"service_info":service_info});
+					}
+				});
+			}
+		},
+        //更新班级
+        {
+            method: 'POST',
+            path: '/update_class',
+            handler: function(request, reply){
+                var clas = request.payload.clas;
+                clas = JSON.parse(clas);
+                if (!clas.plan_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
+                || !clas.master_id || !clas.remarks || !clas.level_id || !clas.id) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+                var id = clas.id;
+                var plan_id = clas.plan_id;
+                var name = clas.name;
+                var code = clas.code;
+                var state = clas.state;
+                var starting_date = clas.starting_date;
+                var end_date = clas.end_date;
+                var class_master = clas.class_master;
+                var master_id = clas.master_id;
+                var remarks = clas.remarks;
+                var level_id = clas.level_id;
+
+                server.plugins['models'].classes.update_class(id, plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
+                    }
+                });
+            }
+        },
+        //查询班级
+        {
+            method: "GET",
+            path: '/search_class_byId',
+            handler: function(request, reply) {
+                var id = request.query.id;
+                var ep =  eventproxy.create("rows", "plans", "teachers", "grades",
+                    function(rows, plans, teachers, grades){
+
+                    return reply({"success":true,"rows":rows,"grades":grades,"plans":plans,"teachers":teachers,"service_info":service_info});
+                });
+                //查询所有班级
+                server.plugins['models'].classes.search_class_byId(id, function(err,rows){
+                    if (!err) {
+                        ep.emit("rows", rows);
+                    }else {
+                        ep.emit("rows", []);
+                    }
+                });
+                //查询所有计划
+                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                    if (!err) {
+                        ep.emit("plans", rows);
+                    }else {
+                        ep.emit("plans", []);
+                    }
+                });
+                //查询所有老师
+                server.plugins['models'].teachers.get_teachers(function(err,rows){
+                    if (!err) {
+                        ep.emit("teachers", rows);
+                    }else {
+                        ep.emit("teachers", []);
+                    }
+                });
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+                        ep.emit("grades", err);
+                    }else {
+                        ep.emit("grades", []);
+                    }
+                });
+            }
+        },
+        //删除班级
+        {
+            method: 'POST',
+            path: '/delete_class',
+            handler: function(request, reply){
+                var id = request.payload.id;
+                if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
+
+                server.plugins['models'].classes.delete_class(id, function(err,result){
+                    if (result.affectedRows>0) {
+                        return reply({"success":true,"service_info":service_info});
+                    }else {
+                        return reply({"success":false,"message":result.message,"service_info":service_info});
                     }
                 });
             }
