@@ -214,7 +214,31 @@ exports.register = function(server, options, next) {
 
 			}
 		},
+		//更新课程信息
+		{
+			method: 'POST',
+			path: '/update_lesson',
+			handler: function(request, reply){
+				var id = request.payload.id;
+				var plan_id = request.payload.plan_id;
+				var teacher_id = request.payload.teacher_id;
+				var name = request.payload.name;
+				var code = request.payload.code;
+				var hours = request.payload.hours;
+				var level_id = request.payload.level_id;
+				if (!id || !teacher_id || !name || !code || !hours || !level_id) {
+					return reply({"success":false,"message":"params wrong","service_info":service_info});
+				}
 
+				server.plugins['models'].lessons.update_lesson(id, plan_id, teacher_id, name, code, hours, level_id, function(err,result){
+					if (result.affectedRows>0) {
+						return reply({"success":true,"service_info":service_info});
+					}else {
+						return reply({"success":false,"message":result.message,"service_info":service_info});
+					}
+				});
+			}
+		},
 
     ]);
 
