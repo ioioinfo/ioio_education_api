@@ -40,7 +40,7 @@ var do_result = function(err,result,cb){
 exports.register = function(server, options, next) {
 
     server.route([
-		//查询班级
+		//查询课程
         {
             method: "GET",
             path: '/get_lessons',
@@ -119,7 +119,75 @@ exports.register = function(server, options, next) {
                 });
             }
         },
+		//查询课程
+        {
+            method: "GET",
+            path: '/search_lesson_byId',
+            handler: function(request, reply) {
+                var id = request.query.id;
+                if (!id) {
+                    return reply({"success":false,"message":"id null","service_info":service_info});
+                }
+                var ep =  eventproxy.create("rows", "plans", "teachers", "grades",
+					function(rows, plans, teachers, grades){
 
+					return reply({"success":true,"rows":rows,"grades":grades,"plans":plans,"teachers":teachers,"service_info":service_info});
+				});
+                //查询教学计划
+                server.plugins['models'].lessons.search_lesson_byId(id,function(err,rows){
+                    if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+				//查询所有计划
+                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                    if (!err) {
+                        ep.emit("plans", rows);
+                    }else {
+                        ep.emit("plans", []);
+                    }
+                });
+                //查询所有老师
+                server.plugins['models'].teachers.get_teachers(function(err,rows){
+                    if (!err) {
+                        ep.emit("teachers", rows);
+                    }else {
+                        ep.emit("teachers", []);
+                    }
+                });
+                //查询所有年级
+                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                    if (!err) {
+                        ep.emit("grades", err);
+                    }else {
+                        ep.emit("grades", []);
+                    }
+                });
+
+
+            }
+        },
+		//删除
+		{
+			method: 'POST',
+			path: '/delete_lesson',
+			handler: function(request, reply){
+				var id = request.payload.id;
+				if (!id) {
+					return reply({"success":false,"message":"id null","service_info":service_info});
+				}
+
+				server.plugins['models'].lessons.delete_lesson(id, function(err,result){
+					if (result.affectedRows>0) {
+						return reply({"success":true,"service_info":service_info});
+					}else {
+						return reply({"success":false,"message":result.message,"service_info":service_info});
+					}
+				});
+			}
+		},
 
     ]);
 
