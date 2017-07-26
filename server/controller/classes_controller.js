@@ -262,13 +262,22 @@ exports.register = function(server, options, next) {
                 var save_fail = [];
 				var save_success = [];
                 async.each(student_ids, function(student_id, cb) {
-                    server.plugins['models'].classes_infos.add_students(class_id,student_id,function(err,result){
-    					if (result.affectedRows>0) {
-                            save_success.push(student_id);
-                            cb();
+					server.plugins['models'].students.search_student_byId(student_id,function(err,rows){
+    					if (!err) {
+							var student_name = rows[0].name;
+							server.plugins['models'].classes_infos.add_students(class_id,student_id,student_name,function(err,result){
+		    					if (result.affectedRows>0) {
+		                            save_success.push(student_id);
+		                            cb();
+		    					}else {
+		                            console.log(content.message);
+		                            save_fail.push(invent);
+		                            cb();
+		    					}
+		    				});
     					}else {
-                            console.log(content.message);
-                            save_fail.push(invent);
+							console.log(rows.message);
+                            save_fail.push(student_id);
                             cb();
     					}
     				});
@@ -277,6 +286,27 @@ exports.register = function(server, options, next) {
                 });
 			}
 		},
+		//查询班级学员
+		{
+			method: "GET",
+			path: '/search_students_byId',
+			handler: function(request, reply) {
+				var id = request.query.class_id;
+				var ep =  eventproxy.create("rows",
+					function(rows){
+					return reply({"success":true,"rows":rows,"service_info":service_info});
+				});
+				//查询所有班级
+				server.plugins['models'].classes_infos.search_students_byId(id,function(err,rows){
+					if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+			}
+		},
+
 
     ]);
 
