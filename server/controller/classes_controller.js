@@ -45,9 +45,13 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/get_classes',
             handler: function(request, reply) {
-
-                var ep =  eventproxy.create("rows", "plans", "teachers", "grades",
-					function(rows, plans, teachers, grades){
+				var params = request.query.params;
+                var info = {};
+                if (params) {
+                    info = JSON.parse(params);
+                }
+                var ep =  eventproxy.create("rows", "plans", "teachers", "grades", "num",
+					function(rows, plans, teachers, grades, num){
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (plans[row.plan_id]) {
@@ -60,14 +64,22 @@ exports.register = function(server, options, next) {
                                 row.level = grades[row.level_id];
                             }
                         }
-					return reply({"success":true,"rows":rows,"service_info":service_info});
+					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
 				});
                 //查询所有班级
-                server.plugins['models'].classes.get_classes(function(err,rows){
+                server.plugins['models'].classes.get_classes(info,function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
 					}else {
 						ep.emit("rows", []);
+					}
+				});
+				//查询所有班级数量
+                server.plugins['models'].classes.account_classes(info,function(err,rows){
+                    if (!err) {
+						ep.emit("num", rows[0].num);
+					}else {
+						ep.emit("num", 0);
 					}
 				});
                 //查询所有计划

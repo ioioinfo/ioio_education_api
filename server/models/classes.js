@@ -4,10 +4,34 @@ var EventProxy = require('eventproxy');
 var classes = function(server) {
 	return {
 		//获得所有班级
-		get_classes : function(cb){
-            var query = `select id, plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, created_at, updated_at, flag, level_id
+		get_classes : function(info, cb){
+            var query = `select id, plan_id, name, code, state, DATE_FORMAT(starting_date,'%Y-%m-%d %H:%i:%S') starting_date, DATE_FORMAT(end_date,'%Y-%m-%d %H:%i:%S') end_date, class_master, master_id, remarks, created_at, updated_at, flag, level_id
             from classes where flag = 0
             `;
+
+			if (info.thisPage) {
+                var offset = info.thisPage-1;
+                if (info.everyNum) {
+                    query = query + " limit " + offset*info.everyNum + "," + info.everyNum;
+                }else {
+                    query = query + " limit " + offset*20 + ",20";
+                }
+            }
+            server.plugins['mysql'].query(query, function(err, results) {
+                if (err) {
+                    console.log(err);
+                    cb(true,results);
+                    return;
+                }
+                cb(false,results);
+            });
+        },
+
+		account_classes : function(info, cb){
+            var query = `select count(1) num
+            from classes where flag = 0
+            `;
+
             server.plugins['mysql'].query(query, function(err, results) {
                 if (err) {
                     console.log(err);
