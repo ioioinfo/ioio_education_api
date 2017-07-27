@@ -28,7 +28,22 @@ var teachers = function(server) {
                 cb(false,results);
             });
         },
+		account_teachers : function(info, cb){
+			var query = `select id, name, code, age, sex, phone, state, address,
+			province, city, district, created_at, photo,  updated_at, flag,
+			type_id, is_master, is_leader, level
+			from teachers where flag = 0
+			`;
 
+			server.plugins['mysql'].query(query, function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
 		// 保存老师
 		save_teacher : function(teacher, cb){
 			var query = `insert into teachers (name, code, age, sex, phone, state, address, province, city, district, photo, type_id, created_at, updated_at, flag, is_master, is_leader, level)

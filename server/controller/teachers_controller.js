@@ -45,23 +45,35 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/get_teachers',
             handler: function(request, reply) {
+				var params = request.query.params;
+				var info = {};
+				if (params) {
+					info = JSON.parse(params);
+				}
 
-                var ep =  eventproxy.create("rows", "types",
-					function(rows, types){
+                var ep =  eventproxy.create("rows", "types", "num",
+					function(rows, types, num){
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (types[row.type_id]) {
                                 row.level = types[row.type_id];
                             }
                         }
-					return reply({"success":true,"rows":rows,"service_info":service_info});
+					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
 				});
                 //查询学员
-                server.plugins['models'].teachers.get_teachers(function(err,rows){
+                server.plugins['models'].teachers.get_teachers(info,function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
 					}else {
 						ep.emit("rows", []);
+					}
+				});
+				server.plugins['models'].teachers.account_teachers(info,function(err,rows){
+					if (!err) {
+						ep.emit("num", rows[0].num);
+					}else {
+						ep.emit("num", 0);
 					}
 				});
                 //查询所有年级
