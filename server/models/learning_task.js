@@ -48,7 +48,7 @@ var learning_task = function(server) {
 			level_id, state, progress_rate, current_hours, total_hours, created_at, updated_at, flag )
 			values
 			(?, ?, ?, ?,
-			?, "创建", 0, 0, ?, now(),
+			?, "未开始", 0, 0, ?, now(),
 			now(),0
 			)
 			`;
@@ -95,7 +95,7 @@ var learning_task = function(server) {
 			});
 		},
 		//删除任务
-		delete_lesson:function(id, cb){
+		delete_task:function(id, cb){
 			var query = `update learning_task set flag = 1, updated_at = now()
 				where id = ?
 				`;
