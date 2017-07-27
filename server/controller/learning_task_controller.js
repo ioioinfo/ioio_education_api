@@ -318,7 +318,7 @@ exports.register = function(server, options, next) {
 					return reply({"success":false,"message":"params wrong","service_info":service_info});
 				}
 
-				server.plugins['models'].lessons.search_lesson_byId(id, function(err,rows){
+				server.plugins['models'].lessons.search_lesson_byId(lesson_id, function(err,rows){
 					if (!err) {
 						var total_hours = rows[0].hours;
 						progress_rate = (current_hours/total_hours).toFixed(2);
