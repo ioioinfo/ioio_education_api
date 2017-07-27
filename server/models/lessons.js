@@ -94,7 +94,7 @@ var lessons = function(server) {
 		//删除课程
 		delete_lesson:function(id, cb){
 			var query = `update lessons set flag = 1, updated_at = now()
-				where id = ?
+				where id = ? flag =0
 				`;
 			server.plugins['mysql'].query(query, [id], function(err, results) {
 				if (err) {

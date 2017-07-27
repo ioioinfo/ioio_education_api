@@ -75,6 +75,8 @@ server.register([
         register: require('./server/controller/lessons_controller.js')
     },{
         register: require('./server/controller/learning_task_controller.js')
+    },{
+        register: require('./server/controller/grade_levels_controller.js')
     },
 
 
