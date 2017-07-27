@@ -32,14 +32,6 @@ var lessons = function(server) {
 			from lessons where flag = 0
 			`;
 
-			if (info.thisPage) {
-				var offset = info.thisPage-1;
-				if (info.everyNum) {
-					query = query + " limit " + offset*info.everyNum + "," + info.everyNum;
-				}else {
-					query = query + " limit " + offset*20 + ",20";
-				}
-			}
 			server.plugins['mysql'].query(query, function(err, results) {
 				if (err) {
 					console.log(err);
@@ -88,7 +80,7 @@ var lessons = function(server) {
 		//查询指定课程
 		search_lesson_byId : function(id, cb){
 			var query = `select id, plan_id, teacher_id, name, code, hours, level_id, created_at, updated_at, flag
-			from classes where flag = 0 and id = ?
+			from lessons where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {
 				if (err) {
@@ -99,12 +91,11 @@ var lessons = function(server) {
 				cb(false,results);
 			});
 		},
-		//班级课程
+		//删除课程
 		delete_lesson:function(id, cb){
 			var query = `update lessons set flag = 1, updated_at = now()
 				where id = ?
 				`;
-				console.log("query:"+query);
 			server.plugins['mysql'].query(query, [id], function(err, results) {
 				if (err) {
 					console.log(err);
