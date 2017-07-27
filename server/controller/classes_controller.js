@@ -50,6 +50,7 @@ exports.register = function(server, options, next) {
                 if (params) {
                     info = JSON.parse(params);
                 }
+				var info2 = {};
                 var ep =  eventproxy.create("rows", "plans", "teachers", "grades", "num",
 					function(rows, plans, teachers, grades, num){
                         for (var i = 0; i < rows.length; i++) {
@@ -83,7 +84,7 @@ exports.register = function(server, options, next) {
 					}
 				});
                 //查询所有计划
-                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                server.plugins['models'].lesson_plans.get_lesson_plans(info2,function(err,rows){
                     if (!err) {
                         var plans_map = {};
 						for (var i = 0; i < rows.length; i++) {
@@ -95,7 +96,7 @@ exports.register = function(server, options, next) {
 					}
 				});
                 //查询所有老师
-                server.plugins['models'].teachers.get_teachers(function(err,rows){
+                server.plugins['models'].teachers.get_teachers(info2,function(err,rows){
                     if (!err) {
                         var teachers_map = {};
 						for (var i = 0; i < rows.length; i++) {
@@ -107,7 +108,7 @@ exports.register = function(server, options, next) {
 					}
 				});
                 //查询所有年级
-                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                server.plugins['models'].grade_levels.get_grades(info2,function(err,rows){
                     if (!err) {
                         var grades_map = {};
                         for (var i = 0; i < rows.length; i++) {
@@ -188,6 +189,7 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/search_class_byId',
             handler: function(request, reply) {
+				var info2 = {};
                 var id = request.query.id;
                 var ep =  eventproxy.create("rows", "plans", "teachers", "grades",
                     function(rows, plans, teachers, grades){
@@ -203,7 +205,7 @@ exports.register = function(server, options, next) {
                     }
                 });
                 //查询所有计划
-                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                server.plugins['models'].lesson_plans.get_lesson_plans(info2,function(err,rows){
                     if (!err) {
                         ep.emit("plans", rows);
                     }else {
@@ -211,7 +213,7 @@ exports.register = function(server, options, next) {
                     }
                 });
                 //查询所有老师
-                server.plugins['models'].teachers.get_teachers(function(err,rows){
+                server.plugins['models'].teachers.get_teachers(info2, function(err,rows){
                     if (!err) {
                         ep.emit("teachers", rows);
                     }else {
@@ -219,9 +221,9 @@ exports.register = function(server, options, next) {
                     }
                 });
                 //查询所有年级
-                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                server.plugins['models'].grade_levels.get_grades(info2,function(err,rows){
                     if (!err) {
-                        ep.emit("grades", err);
+                        ep.emit("grades", rows);
                     }else {
                         ep.emit("grades", []);
                     }

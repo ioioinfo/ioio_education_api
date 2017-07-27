@@ -3,12 +3,22 @@ var EventProxy = require('eventproxy');
 
 var teachers = function(server) {
 	return {
-		get_teachers : function(cb){
+		get_teachers : function(info, cb){
             var query = `select id, name, code, age, sex, phone, state, address,
 			province, city, district, created_at, photo,  updated_at, flag,
 			type_id, is_master, is_leader
             from teachers where flag = 0
             `;
+
+			if (info.thisPage) {
+                var offset = info.thisPage-1;
+                if (info.everyNum) {
+                    query = query + " limit " + offset*info.everyNum + "," + info.everyNum;
+                }else {
+                    query = query + " limit " + offset*20 + ",20";
+                }
+            }
+
             server.plugins['mysql'].query(query, function(err, results) {
                 if (err) {
                     console.log(err);
@@ -18,6 +28,7 @@ var teachers = function(server) {
                 cb(false,results);
             });
         },
+
 		// 保存老师
 		save_teacher : function(teacher, cb){
 			var query = `insert into teachers (name, code, age, sex, phone, state, address, province, city, district, photo, type_id, created_at, updated_at, flag,

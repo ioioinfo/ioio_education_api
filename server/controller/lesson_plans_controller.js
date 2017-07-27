@@ -45,7 +45,12 @@ exports.register = function(server, options, next) {
             method: "GET",
             path: '/get_lesson_plans',
             handler: function(request, reply) {
-
+				var params = request.query.params;
+				var info = {};
+				if (params) {
+					info = JSON.parse(params);
+				}
+				var info2 = {};
                 var ep =  eventproxy.create("rows", "grades",
 					function(rows, grades){
                         for (var i = 0; i < rows.length; i++) {
@@ -57,7 +62,7 @@ exports.register = function(server, options, next) {
 					return reply({"success":true,"rows":rows,"service_info":service_info});
 				});
                 //查询教学计划
-                server.plugins['models'].lesson_plans.get_lesson_plans(function(err,rows){
+                server.plugins['models'].lesson_plans.get_lesson_plans(info,function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
 					}else {

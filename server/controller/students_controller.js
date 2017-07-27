@@ -50,6 +50,7 @@ exports.register = function(server, options, next) {
 				if (params) {
 					info = JSON.parse(params);
 				}
+				var info2 = {};
                 var ep =  eventproxy.create("rows", "grades", "num",
 					function(rows, grades, num){
                         for (var i = 0; i < rows.length; i++) {
@@ -77,7 +78,7 @@ exports.register = function(server, options, next) {
 					}
 				});
                 //查询所有年级
-                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                server.plugins['models'].grade_levels.get_grades(info2,function(err,rows){
                     if (!err) {
                         var grades_map = {};
                         for (var i = 0; i < rows.length; i++) {
@@ -163,6 +164,7 @@ exports.register = function(server, options, next) {
 				if (!id) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
+				var info2 = {};
                 var ep =  eventproxy.create("rows", "grades",
 					function(rows, grades){
                         // for (var i = 0; i < rows.length; i++) {
@@ -182,7 +184,7 @@ exports.register = function(server, options, next) {
 					}
 				});
                 //查询所有年级
-                server.plugins['models'].grade_levels.get_grades(function(err,rows){
+                server.plugins['models'].grade_levels.get_grades(info2,function(err,rows){
                     if (!err) {
 
                         ep.emit("grades", rows);
