@@ -188,7 +188,7 @@ exports.register = function(server, options, next) {
             handler: function(request, reply){
                 var teacher = request.payload.teacher;
                 teacher = JSON.parse(teacher);
-                if (!teacher.id||!teacher.name|| !teacher.code|| !teacher.age|| !teacher.sex|| !teacher.phone|| !teacher.state||!teacher.address|| !teacher.province|| !teacher.city|| !teacher.district|| !teacher.photo|| !teacher.type_id|| !teacher.is_master|| !teacher.is_leader) {
+                if (!teacher.id||!teacher.name|| !teacher.code|| !teacher.age|| !teacher.sex|| !teacher.phone|| !teacher.state||!teacher.address|| !teacher.province|| !teacher.city|| !teacher.district|| !teacher.photo|| !teacher.type_id|| !teacher.is_master|| !teacher.is_leader || !teacher.level) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
                 var id = teacher.id;
@@ -206,8 +206,9 @@ exports.register = function(server, options, next) {
                 var type_id = teacher.type_id;
                 var is_master = teacher.is_master;
                 var is_leader = teacher.is_leader;
+				var level = teacher.level;
 
-                server.plugins['models'].teachers.update_teacher(id, name, code, age, sex, phone, state, address, province, city, district, photo, type_id, is_master, is_leader, function(err,result){
+                server.plugins['models'].teachers.update_teacher(id, name, code, age, sex, phone, state, address, province, city, district, photo, type_id, is_master, is_leader, level, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
                     }else {

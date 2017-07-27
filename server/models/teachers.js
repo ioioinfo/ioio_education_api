@@ -6,7 +6,7 @@ var teachers = function(server) {
 		get_teachers : function(info, cb){
             var query = `select id, name, code, age, sex, phone, state, address,
 			province, city, district, created_at, photo,  updated_at, flag,
-			type_id, is_master, is_leader
+			type_id, is_master, is_leader, level
             from teachers where flag = 0
             `;
 
@@ -31,16 +31,14 @@ var teachers = function(server) {
 
 		// 保存老师
 		save_teacher : function(teacher, cb){
-			var query = `insert into teachers (name, code, age, sex, phone, state, address, province, city, district, photo, type_id, created_at, updated_at, flag,
-			is_master, is_leader)
+			var query = `insert into teachers (name, code, age, sex, phone, state, address, province, city, district, photo, type_id, created_at, updated_at, flag, is_master, is_leader, level)
 			values
 			(?, ?, ?, ?, ?, ?, ?,
 			?, ?, ?, ?, ?, now(), now(), 0,
-			?, ?
+			?, ?, ?
 			)
 			`;
-			var coloums = [teacher.name, teacher.code, teacher.age, teacher.sex, teacher.phone, teacher.state, teacher.address, teacher.province, teacher.city, teacher.district, teacher.photo, teacher.type_id, teacher.is_master,
-			teacher.is_leader];
+			var coloums = [teacher.name, teacher.code, teacher.age, teacher.sex, teacher.phone, teacher.state, teacher.address, teacher.province, teacher.city, teacher.district, teacher.photo, teacher.type_id, teacher.is_master, teacher.is_leader, teacher.level];
 			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
@@ -68,7 +66,7 @@ var teachers = function(server) {
 		search_teacher_byId : function(id, cb){
 			var query = `select id, name, code, age, sex, phone, state, address,
 			province, city, district, created_at, photo,  updated_at, flag,
-			type_id, is_master, is_leader
+			type_id, is_master, is_leader ,level
 			from teachers where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {
@@ -82,15 +80,15 @@ var teachers = function(server) {
 		},
 		//更新信息
 		update_teacher:function(id, name, code, age, sex, phone, state, address,
-		province, city, district, photo, type_id, is_master, is_leader, cb){
+		province, city, district, photo, type_id, is_master, is_leader, level, cb){
 			var query = `update teachers set name =?, code =?, age =?, sex =?,
 			phone =?, state =?, address =?, province =?, city =?, district = ?,
-			photo = ?, type_id = ?, is_master = ?, is_leader =?, updated_at = now()
+			photo = ?, type_id = ?, is_master = ?, is_leader =?, level =?, updated_at = now()
 			where id = ? and flag =0
 				`;
 			var coloums = [name, code, age, sex,
 				phone, state, address, province, city, district,
-				photo, type_id, is_master, is_leader, id];
+				photo, type_id, is_master, is_leader, level, id];
 			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
