@@ -34,11 +34,13 @@ var classes_infos = function(server) {
 			});
 		},
 		//学员删除
-		delete_class_student:function(id, cb){
+		delete_class_student:function(class_id,student_id, cb){
 			var query = `update classes_infos set flag = 1, updated_at = now()
-				where id = ? and flag =0
+				where class_id = ? and student_id = ? and flag =0
 				`;
-			server.plugins['mysql'].query(query, [id], function(err, results) {
+			var coloums = [class_id, student_id];
+			console.log("coloums:"+JSON.stringify(coloums));
+			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
 					cb(true,results);

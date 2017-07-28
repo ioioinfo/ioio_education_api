@@ -272,8 +272,8 @@ exports.register = function(server, options, next) {
 		                            save_success.push(student_id);
 		                            cb();
 		    					}else {
-		                            console.log(content.message);
-		                            save_fail.push(invent);
+		                            console.log(result.message);
+		                            save_fail.push(student_id);
 		                            cb();
 		    					}
 		    				});
@@ -333,18 +333,30 @@ exports.register = function(server, options, next) {
 			method: 'POST',
 			path: '/delete_class_student',
 			handler: function(request, reply){
-				var id = request.payload.id;
-				if (!id) {
-					return reply({"success":false,"message":"id null","service_info":service_info});
-				}
+				var class_id = request.payload.class_id;
+                var student_ids = request.payload.student_ids;
+                student_ids = JSON.parse(student_ids);
 
-				server.plugins['models'].classes_infos.delete_class_student(id, function(err,result){
-					if (result.affectedRows>0) {
-						return reply({"success":true,"service_info":service_info});
-					}else {
-						return reply({"success":false,"message":result.message,"service_info":service_info});
-					}
-				});
+                if (!class_id || student_ids.length==0) {
+                    return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+                var save_fail = [];
+				var save_success = [];
+                async.each(student_ids, function(student_id, cb) {
+					server.plugins['models'].classes_infos.delete_class_student(class_id,student_id,function(err,result){
+    					if (result.affectedRows>0) {
+                            save_success.push(student_id);
+                            cb();
+    					}else {
+                            console.log(result.message);
+                            save_fail.push(student_id);
+                            cb();
+    					}
+    				});
+                }, function(err) {
+                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
+                });
+
 			}
 		},
 
