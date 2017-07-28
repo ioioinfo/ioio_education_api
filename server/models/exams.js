@@ -89,11 +89,12 @@ var exams = function(server) {
         },
         //更新信息
 		update_exam:function(exam, cb){
-			var query = `update exams set name = ?, code = ?, remark = ?,
-			updated_at = now()
+				var query = `update exams set name = ?, code = ?, level_id = ?, class_id = ?, lesson_id = ?, state = ?, starting_date = ?,
+				end_date = ?, updated_at = now()
 				where id = ? and flag =0
 				`;
-			var coloums = [name, code, remark, id];
+			var coloums = [exam.name, exam.code, exam.level_id,
+				exam.class_id, exam.lesson_id, exam.state, exam.starting_date, exam.end_date, exam.id];
 			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
