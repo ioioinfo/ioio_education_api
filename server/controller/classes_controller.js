@@ -328,7 +328,25 @@ exports.register = function(server, options, next) {
 
 			}
 		},
+		//删除班级
+		{
+			method: 'POST',
+			path: '/delete_class_student',
+			handler: function(request, reply){
+				var id = request.payload.id;
+				if (!id) {
+					return reply({"success":false,"message":"id null","service_info":service_info});
+				}
 
+				server.plugins['models'].classes_infos.delete_class_student(id, function(err,result){
+					if (result.affectedRows>0) {
+						return reply({"success":true,"service_info":service_info});
+					}else {
+						return reply({"success":false,"message":result.message,"service_info":service_info});
+					}
+				});
+			}
+		},
 
 
     ]);

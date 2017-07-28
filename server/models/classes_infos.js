@@ -33,6 +33,20 @@ var classes_infos = function(server) {
 				cb(false,results);
 			});
 		},
+		//学员删除
+		delete_class_student:function(id, cb){
+			var query = `update classes_infos set flag = 1, updated_at = now()
+				where id = ? and flag =0
+				`;
+			server.plugins['mysql'].query(query, [id], function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
 
 	};
 };
