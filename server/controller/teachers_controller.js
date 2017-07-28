@@ -50,7 +50,7 @@ exports.register = function(server, options, next) {
 				if (params) {
 					info = JSON.parse(params);
 				}
-
+				var info2 = {};
                 var ep =  eventproxy.create("rows", "types", "num",
 					function(rows, types, num){
                         for (var i = 0; i < rows.length; i++) {
@@ -77,7 +77,7 @@ exports.register = function(server, options, next) {
 					}
 				});
                 //查询所有年级
-                server.plugins['models'].teachers_types.get_teachers_types(function(err,rows){
+                server.plugins['models'].teachers_types.get_teachers_types(info2,function(err,rows){
                     if (!err) {
                         var types_map = {};
                         for (var i = 0; i < rows.length; i++) {
@@ -165,6 +165,7 @@ exports.register = function(server, options, next) {
                 if (!id) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
+				var info2 = {};
                 var ep =  eventproxy.create("rows", "types",
                     function(rows, types){
                         // for (var i = 0; i < rows.length; i++) {
@@ -184,7 +185,7 @@ exports.register = function(server, options, next) {
                     }
                 });
                 //查询所有年级
-                server.plugins['models'].teachers_types.get_teachers_types(function(err,rows){
+                server.plugins['models'].teachers_types.get_teachers_types(info2,function(err,rows){
                     if (!err) {
                         ep.emit("types", rows);
                     }else {
