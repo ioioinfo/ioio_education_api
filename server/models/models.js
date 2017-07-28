@@ -13,6 +13,7 @@ exports.register = function(server, options, next){
     server.expose('feedbacks', require('./feedbacks.js')(server));
     server.expose('teachers_types', require('./teachers_types.js')(server));
     server.expose('grade_levels', require('./grade_levels.js')(server));
+    server.expose('exams', require('./exams.js')(server));
 
 
   next();

@@ -102,6 +102,24 @@ var students = function(server) {
 				cb(false,results);
 			});
 		},
+		//查询可以添加到班级的学员
+		add_by_classId : function(id, cb){
+			var query = `select id, name, code from students 
+				where level_id in
+				(select level_id from classes where id =?)
+				and id not in
+				(select student_id from classes_infos where class_id = ?)
+			`;
+			server.plugins['mysql'].query(query,[id,id],function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
+
 
 	};
 };
