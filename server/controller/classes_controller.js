@@ -319,7 +319,7 @@ exports.register = function(server, options, next) {
                 }
 				server.plugins['models'].students.add_by_classId(id,function(err,rows){
 					if (!err) {
-						return reply({"success":true,"message":rows,"service_info":service_info});
+						return reply({"success":true,"rows":rows,"num":rows.length,"service_info":service_info});
 					}else {
 						return reply({"success":false,"message":rows.message,"service_info":service_info});
 					}
