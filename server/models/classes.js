@@ -98,7 +98,7 @@ var classes = function(server) {
 		//班级删除
 		delete_class:function(id, cb){
 			var query = `update classes set flag = 1, updated_at = now()
-				where id = ?
+				where id = ? and state = "已关闭"
 				`;
 			server.plugins['mysql'].query(query, [id], function(err, results) {
 				if (err) {
