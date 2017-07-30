@@ -104,11 +104,11 @@ var students = function(server) {
 		},
 		//查询可以添加到班级的学员
 		add_by_classId : function(id, cb){
-			var query = `select id, name, code from students 
+			var query = `select id, name, code from students
 				where level_id in
-				(select level_id from classes where id =?)
+				(select level_id from classes where id =? and flag = 0)
 				and id not in
-				(select student_id from classes_infos where class_id = ?)
+				(select student_id from classes_infos where class_id = ? and flag = 0)
 			`;
 			server.plugins['mysql'].query(query,[id,id],function(err, results) {
 				if (err) {

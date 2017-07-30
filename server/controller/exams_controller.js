@@ -127,31 +127,25 @@ exports.register = function(server, options, next) {
 			method: 'POST',
 			path: '/save_exam',
 			handler: function(request, reply){
-                var teachers = request.payload.teachers;
-                teachers = JSON.parse(teachers);
-                if (teachers.length==0) {
-                    return reply({"success":false,"message":"teachers wrong","service_info":service_info});
-                }
+                var exam = request.payload.exam;
+                exam = JSON.parse(exam);
 
-                var save_fail = [];
-				var save_success = [];
-                async.each(teachers, function(teacher, cb) {
-                    server.plugins['models'].teachers.save_teacher(teacher,function(err,result){
-    					if (result.affectedRows>0) {
-                            save_success.push(teacher.name);
-                            cb();
-    					}else {
-                            console.log(content.message);
-                            save_fail.push(teacher.name);
-                            cb();
-    					}
-    				});
-                }, function(err) {
-                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
-                });
+				if (!exam.name || !exam.code || !exam.level_id || !exam.class_id
+                || !exam.lesson_id || !exam.state || !exam.starting_date || !exam.end_date) {
+					return reply({"success":false,"message":"params wrong","service_info":service_info});
+				}
+
+				server.plugins['models'].exams.save_exam(exam, function(err,result){
+					if (result.affectedRows>0) {
+						return reply({"success":true,"service_info":service_info});
+					}else {
+						return reply({"success":false,"message":result.message,"service_info":service_info});
+					}
+				});
+
 			}
 		},
-        //删除老师
+        //删除考试
         {
             method: 'POST',
             path: '/delete_exam',
@@ -160,7 +154,6 @@ exports.register = function(server, options, next) {
                 if (!id) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
-
                 server.plugins['models'].teachers.delete_teacher(id, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
