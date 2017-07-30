@@ -154,7 +154,7 @@ exports.register = function(server, options, next) {
                 if (!id) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
-                server.plugins['models'].teachers.delete_teacher(id, function(err,result){
+                server.plugins['models'].exams.delete_exam(id, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
                     }else {
@@ -163,7 +163,7 @@ exports.register = function(server, options, next) {
                 });
             }
         },
-        //根据id查询老师
+        //根据id查询考试
         {
             method: "GET",
             path: '/search_exam_byId',
@@ -173,62 +173,84 @@ exports.register = function(server, options, next) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
 				var info2 = {};
-                var ep =  eventproxy.create("rows", "types",
-                    function(rows, types){
-                        // for (var i = 0; i < rows.length; i++) {
-                        //     var row = rows[i];
-                        //     if (types[row.type_id]) {
-                        //         row.level = types[row.type_id];
-                        //     }
-                        // }
-                    return reply({"success":true,"rows":rows,"types":types,"service_info":service_info});
+                var ep =  eventproxy.create("rows", "grades", "classes", "lessons",
+                    function(rows, grades, classes, lessons){
+						for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            if (grades[row.level_id]) {
+                                row.level = grades[row.level_id];
+                            }
+                            if (classes[row.class_id]) {
+                                row.class = classes[row.class_id];
+                            }
+                            if (lessons[row.lesson_id]) {
+                                row.lessons = lessons[row.lesson_id];
+                            }
+                        }
+                    return reply({"success":true,"rows":rows,"service_info":service_info});
                 });
-                //查询学员
-                server.plugins['models'].teachers.search_teacher_byId(id,function(err,rows){
+                //查询考试
+                server.plugins['models'].exams.search_exam_byId(id,function(err,rows){
                     if (!err) {
                         ep.emit("rows", rows);
                     }else {
                         ep.emit("rows", []);
                     }
                 });
-                //查询所有年级
-                server.plugins['models'].teachers_types.get_teachers_types(info2,function(err,rows){
+				//查询所有年级
+                server.plugins['models'].grade_levels.get_grades(info2,function(err,rows){
                     if (!err) {
-                        ep.emit("types", rows);
+                        var grades_map = {};
+                        for (var i = 0; i < rows.length; i++) {
+                            grades_map[rows[i].id] = rows[i];
+                        }
+                        ep.emit("grades", grades_map);
                     }else {
-                        ep.emit("types", []);
+                        ep.emit("grades", {});
                     }
                 });
+
+                //查询所有班级
+                server.plugins['models'].classes.get_classes(info2,function(err,rows){
+                    if (!err) {
+                        var classes_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							classes_map[rows[i].id] = rows[i];
+						}
+						ep.emit("classes", classes_map);
+					}else {
+						ep.emit("classes", {});
+					}
+				});
+
+                //查询所有课程
+                server.plugins['models'].lessons.get_lessons(info2,function(err,rows){
+                    if (!err) {
+                        var lessons_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							lessons_map[rows[i].id] = rows[i];
+						}
+						ep.emit("lessons", lessons_map);
+					}else {
+						ep.emit("lessons", {});
+					}
+				});
             }
         },
-        //更新老师信息
+        //更新考试信息
         {
             method: 'POST',
             path: '/update_exam',
             handler: function(request, reply){
-                var teacher = request.payload.teacher;
-                teacher = JSON.parse(teacher);
-                if (!teacher.id||!teacher.name|| !teacher.code|| !teacher.age|| !teacher.sex|| !teacher.phone|| !teacher.state||!teacher.address|| !teacher.province|| !teacher.city|| !teacher.district|| !teacher.photo|| !teacher.type_id|| !teacher.is_master|| !teacher.is_leader || !teacher.level) {
-                    return reply({"success":false,"message":"params wrong","service_info":service_info});
-                }
-                var id = teacher.id;
-                var name = teacher.name;
-                var code = teacher.code;
-                var age = teacher.age;
-                var sex = teacher.sex;
-                var phone = teacher.phone;
-                var state = teacher.state;
-                var address = teacher.address;
-                var province = teacher.province;
-                var city = teacher.city;
-                var district = teacher.district;
-                var photo = teacher.photo;
-                var type_id = teacher.type_id;
-                var is_master = teacher.is_master;
-                var is_leader = teacher.is_leader;
-				var level = teacher.level;
+				var exam = request.payload.exam;
+                exam = JSON.parse(exam);
 
-                server.plugins['models'].teachers.update_teacher(id, name, code, age, sex, phone, state, address, province, city, district, photo, type_id, is_master, is_leader, level, function(err,result){
+				if (!exam.name || !exam.code || !exam.level_id || !exam.class_id
+                || !exam.lesson_id || !exam.state || !exam.starting_date || !exam.end_date || !exam.id) {
+					return reply({"success":false,"message":"params wrong","service_info":service_info});
+				}
+
+                server.plugins['models'].exams.update_exam(exam, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
                     }else {
