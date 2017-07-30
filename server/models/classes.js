@@ -5,7 +5,7 @@ var classes = function(server) {
 	return {
 		//获得所有班级
 		get_classes : function(info, cb){
-            var query = `select id, plan_id, name, code, state, DATE_FORMAT(starting_date,'%Y-%m-%d %H:%i:%S') starting_date, DATE_FORMAT(end_date,'%Y-%m-%d %H:%i:%S') end_date, class_master, master_id, remarks, created_at, updated_at, flag, level_id
+            var query = `select id, plan_id, name, code, state, DATE_FORMAT(starting_date,'%Y-%m-%d') starting_date, DATE_FORMAT(end_date,'%Y-%m-%d') end_date, class_master, master_id, remarks, created_at, updated_at, flag, level_id
             from classes where flag = 0
             `;
 
@@ -83,7 +83,7 @@ var classes = function(server) {
     	},
 		//查询指定班级
 		search_class_byId : function(id, cb){
-			var query = `select id, plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, created_at, updated_at, flag, level_id
+			var query = `select id, plan_id, name, code, state, DATE_FORMAT(starting_date,'%Y-%m-%d') starting_date, DATE_FORMAT(end_date,'%Y-%m-%d') end_date, class_master, master_id, remarks, created_at, updated_at, flag, level_id
 			from classes where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {

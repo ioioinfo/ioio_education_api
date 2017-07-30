@@ -84,6 +84,9 @@ server.register([
     },{
         register: require('./server/controller/exams_records_controller.js')
     },
+    {
+        register: require('./server/controller/feedbacks_controller.js')
+    },
 
 
 
