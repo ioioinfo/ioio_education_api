@@ -296,7 +296,7 @@ exports.register = function(server, options, next) {
 				var id = request.query.class_id;
 				var ep =  eventproxy.create("rows",
 					function(rows){
-					return reply({"success":true,"rows":rows,"service_info":service_info});
+					return reply({"success":true,"rows":rows,"num":rows.length,"service_info":service_info});
 				});
 				//查询所有班级
 				server.plugins['models'].classes_infos.search_students_byId(id,function(err,rows){
