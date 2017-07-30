@@ -3,21 +3,21 @@ var EventProxy = require('eventproxy');
 
 var learning_task = function(server) {
 	return {
-		//获得所有班级
+		//获得所有学习任务
 		get_learning_tasks : function(info, cb){
 			var query = `select id, student_id, class_id, plan_id, lesson_id,
 			level_id, state, progress_rate, current_hours, total_hours,
 			created_at, updated_at, flag
 			from learning_task where flag = 0
 			`;
-			// if (info.thisPage) {
-			//     var offset = info.thisPage-1;
-			//     if (info.everyNum) {
-			//         query = query + " limit " + offset*info.everyNum + "," + info.everyNum;
-			//     }else {
-			//         query = query + " limit " + offset*20 + ",20";
-			//     }
-			// }
+			if (info.thisPage) {
+			    var offset = info.thisPage-1;
+			    if (info.everyNum) {
+			        query = query + " limit " + offset*info.everyNum + "," + info.everyNum;
+			    }else {
+			        query = query + " limit " + offset*20 + ",20";
+			    }
+			}
 			server.plugins['mysql'].query(query, function(err, results) {
 				if (err) {
 					console.log(err);

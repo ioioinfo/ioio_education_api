@@ -8,7 +8,7 @@ exports.register = function(server, options, next){
     server.expose('lesson_plans', require('./lesson_plans.js')(server));
     server.expose('lessons', require('./lessons.js')(server));
     server.expose('learning_task', require('./learning_task.js')(server));
-    server.expose('learning_record', require('./learning_record.js')(server));
+    server.expose('learning_records', require('./learning_records.js')(server));
     server.expose('dicussions', require('./dicussions.js')(server));
     server.expose('feedbacks', require('./feedbacks.js')(server));
     server.expose('teachers_types', require('./teachers_types.js')(server));
