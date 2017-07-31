@@ -109,6 +109,7 @@ var students = function(server) {
 				(select level_id from classes where id =? and flag = 0)
 				and id not in
 				(select student_id from classes_infos where class_id = ? and flag = 0)
+				and flag = 0
 			`;
 			server.plugins['mysql'].query(query,[id,id],function(err, results) {
 				if (err) {
