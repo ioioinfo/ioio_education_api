@@ -57,12 +57,15 @@ exports.register = function(server, options, next) {
                             var row = rows[i];
                             if (plans[row.plan_id]) {
                                 row.plan = plans[row.plan_id];
+								row.plan_name = plans[row.plan_id].name;
                             }
                             if (teachers[row.teacher_id]) {
                                 row.teacher = teachers[row.teacher_id];
+								row.teacher_name = teachers[row.teacher_id].name;
                             }
                             if (grades[row.level_id]) {
                                 row.level = grades[row.level_id];
+								row.level_name = grades[row.level_id].name;
                             }
                         }
 					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
