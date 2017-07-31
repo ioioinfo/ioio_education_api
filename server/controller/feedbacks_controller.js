@@ -184,7 +184,7 @@ exports.register = function(server, options, next) {
 
 			}
 		},
-		//更新老师分类
+		//更新反馈
 		{
 			method: 'POST',
 			path: '/update_feedback',
