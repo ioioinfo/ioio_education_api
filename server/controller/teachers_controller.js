@@ -201,7 +201,7 @@ exports.register = function(server, options, next) {
             handler: function(request, reply){
                 var teacher = request.payload.teacher;
                 teacher = JSON.parse(teacher);
-                if (!teacher.id||!teacher.name|| !teacher.code|| !teacher.age|| !teacher.sex|| !teacher.phone|| !teacher.state||!teacher.address|| !teacher.province|| !teacher.city|| !teacher.district|| !teacher.photo|| !teacher.type_id|| !teacher.is_master|| !teacher.is_leader || !teacher.level) {
+                if (!teacher.id||!teacher.name|| !teacher.code|| !teacher.age|| !teacher.sex|| !teacher.phone|| !teacher.state||!teacher.address|| !teacher.province|| !teacher.city|| !teacher.district|| !teacher.photo|| !teacher.type_id|| !teacher.level) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
                 var id = teacher.id;
