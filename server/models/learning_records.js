@@ -5,7 +5,7 @@ var learning_records = function(server) {
 	return {
 		get_learning_records : function(info, cb){
 			var query = `select id, student_id, class_id, plan_id, lesson_id,
-			level_id, hours, starting_date, end_date, created_at, updated_at, flag
+			level_id, hours, DATE_FORMAT(starting_date,'%Y-%m-%d %H:%i:%S')starting_date, DATE_FORMAT(end_date,'%Y-%m-%d %H:%i:%S')end_date, created_at, updated_at, flag
 			from learning_records where flag = 0
 			`;
 			if (info.thisPage) {
@@ -62,7 +62,7 @@ var learning_records = function(server) {
 		//查询指定学习记录
 		search_learning_record_byId : function(id, cb){
 			var query = `select id, student_id, class_id, plan_id, lesson_id,
-			level_id, hours, starting_date, end_date, created_at, updated_at, flag
+			level_id, hours, DATE_FORMAT(starting_date,'%Y-%m-%d %H:%i:%S')starting_date, DATE_FORMAT(end_date,'%Y-%m-%d %H:%i:%S')end_date, created_at, updated_at, flag
 			from learning_records where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {

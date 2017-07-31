@@ -5,7 +5,7 @@ var feedbacks = function(server) {
 	return {
 		//查询反馈
 		get_feedbacks : function(info,cb){
-            var query = `select id, student_id, student_name, feedback_person,  feedback_content, state, feedback_date, created_at, updated_at, flag
+            var query = `select id, student_id, student_name, feedback_person,  feedback_content, state, DATE_FORMAT(feedback_date,'%Y-%m-%d')feedback_date, created_at, updated_at, flag
             from feedbacks where flag = 0
             `;
 
@@ -55,7 +55,7 @@ var feedbacks = function(server) {
 		},
 		//id查询反馈
 		search_feedback_byId : function(id, cb){
-			var query = `select id, student_id, student_name, feedback_person,  feedback_content, state, feedback_date, created_at, updated_at, flag
+			var query = `select id, student_id, student_name, feedback_person,  feedback_content, state, DATE_FORMAT(feedback_date,'%Y-%m-%d')feedback_date, created_at, updated_at, flag
 			from feedbacks where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {
