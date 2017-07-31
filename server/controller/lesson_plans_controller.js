@@ -51,15 +51,15 @@ exports.register = function(server, options, next) {
 					info = JSON.parse(params);
 				}
 				var info2 = {};
-                var ep =  eventproxy.create("rows", "grades",
-					function(rows, grades){
+                var ep =  eventproxy.create("rows", "grades","num",
+					function(rows, grades,num){
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (grades[row.level_id]) {
                                 row.level = grades[row.level_id];
                             }
                         }
-					return reply({"success":true,"rows":rows,"service_info":service_info});
+					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
 				});
                 //查询教学计划
                 server.plugins['models'].lesson_plans.get_lesson_plans(info,function(err,rows){
@@ -70,6 +70,13 @@ exports.register = function(server, options, next) {
 					}
 				});
 
+				server.plugins['models'].lesson_plans.get_lesson_plans(info,function(err,rows){
+					if (!err) {
+						ep.emit("num", rows[0].num);
+					}else {
+						ep.emit("num", 0);
+					}
+				});
 
                 //查询所有年级
                 server.plugins['models'].grade_levels.get_grades(info2,function(err,rows){
@@ -95,15 +102,15 @@ exports.register = function(server, options, next) {
                 if (!id) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
-                var ep =  eventproxy.create("rows", "grades","grades_level","num",
-					function(rows, grades, grades_level,num){
+                var ep =  eventproxy.create("rows", "grades","grades_level",
+					function(rows, grades, grades_level){
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (grades[row.level_id]) {
                                 row.level = grades[row.level_id];
                             }
                         }
-					return reply({"success":true,"rows":rows,"num":num,"grades_level":grades_level,"service_info":service_info});
+					return reply({"success":true,"rows":rows,"grades_level":grades_level,"service_info":service_info});
 				});
                 //查询教学计划
                 server.plugins['models'].lesson_plans.search_plan_byId(id,function(err,rows){
@@ -111,13 +118,6 @@ exports.register = function(server, options, next) {
 						ep.emit("rows", rows);
 					}else {
 						ep.emit("rows", []);
-					}
-				});
-				server.plugins['models'].lesson_plans.get_lesson_plans(info,function(err,rows){
-                    if (!err) {
-						ep.emit("num", rows[0].num);
-					}else {
-						ep.emit("num", 0);
 					}
 				});
                 //查询所有年级
