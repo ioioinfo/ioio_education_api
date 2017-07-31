@@ -18,7 +18,7 @@ var lesson_plans = function(server) {
         },
 
 		get_lesson_plans : function(info, cb){
-            var query = `select count(1) num
+            var query = `select id, name, code, created_at, updated_at, flag, level_id
             from lesson_plans where flag = 0
             `;
 			if (info.thisPage) {
@@ -38,7 +38,19 @@ var lesson_plans = function(server) {
                 cb(false,results);
             });
         },
-
+		account_lesson_plans : function(info,cb){
+			var query = `select count(1) num
+            from lesson_plans where flag = 0
+			`;
+			server.plugins['mysql'].query(query, function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
 		delete_plan:function(id, cb){
 			var query = `update lesson_plans set flag = 1, updated_at = now()
 				where id = ?
