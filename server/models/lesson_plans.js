@@ -18,7 +18,7 @@ var lesson_plans = function(server) {
         },
 
 		get_lesson_plans : function(info, cb){
-            var query = `select id, name, code, created_at, updated_at, flag, level_id
+            var query = `select count(1) num
             from lesson_plans where flag = 0
             `;
 			if (info.thisPage) {

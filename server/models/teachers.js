@@ -29,9 +29,7 @@ var teachers = function(server) {
             });
         },
 		account_teachers : function(info, cb){
-			var query = `select id, name, code, age, sex, phone, state, address,
-			province, city, district, created_at, photo,  updated_at, flag,
-			type_id, is_master, is_leader, level
+			var query = `select count(1) num
 			from teachers where flag = 0
 			`;
 
