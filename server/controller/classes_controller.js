@@ -59,7 +59,7 @@ exports.register = function(server, options, next) {
                                 row.plan = plans[row.plan_id];
                             }
                             if (teachers[row.master_id]) {
-                                row.master = teachers[row.master_id];
+                                row.class_master = teachers[row.master_id].name;
                             }
                             if (grades[row.level_id]) {
                                 row.level = grades[row.level_id];
