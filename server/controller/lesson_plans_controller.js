@@ -70,7 +70,7 @@ exports.register = function(server, options, next) {
 					}
 				});
 
-				server.plugins['models'].lesson_plans.get_lesson_plans(info,function(err,rows){
+				server.plugins['models'].lesson_plans.account_lesson_plans(info,function(err,rows){
 					if (!err) {
 						ep.emit("num", rows[0].num);
 					}else {
