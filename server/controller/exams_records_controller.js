@@ -172,9 +172,11 @@ exports.register = function(server, options, next) {
                             var row = rows[i];
                             if (exams[row.exam_id]) {
                                 row.exam = exams[row.exam_id];
+								row.exam_name = exams[row.exam_id].name;
                             }
                             if (students[row.student_id]) {
                                 row.student = students[row.student_id];
+								row.student_name = students[row.student_id].name;
                             }
                         }
                     return reply({"success":true,"rows":rows,"service_info":service_info});
