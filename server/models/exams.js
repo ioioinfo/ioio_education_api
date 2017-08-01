@@ -6,7 +6,7 @@ var exams = function(server) {
         //查询考试
 		get_exams : function(info,cb){
             var query = `select id, name, code, level_id, class_id, lesson_id,
-            state, starting_date, end_date, created_at, updated_at, flag
+            state, DATE_FORMAT(starting_date,'%Y-%m-%d')starting_date, DATE_FORMAT(end_date,'%Y-%m-%d')end_date, created_at, updated_at, flag
             from exams where flag = 0
             `;
 
