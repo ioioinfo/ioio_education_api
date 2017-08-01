@@ -103,11 +103,11 @@ exports.register = function(server, options, next) {
 				var info2 = {};
                 var ep =  eventproxy.create("rows", "teachers",
 					function(rows, teachers){
-
+						
 					return reply({"success":true,"rows":rows,"teachers":teachers,"service_info":service_info});
 				});
                 //查询教学计划
-                server.plugins['models'].lessons.search_lesson_byId(id,function(err,rows){
+                server.plugins['models'].grade_levels.search_grade_byId(id,function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
 					}else {
