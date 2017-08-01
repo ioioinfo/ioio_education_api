@@ -57,7 +57,7 @@ var exams = function(server) {
         //id查询考试
 		search_exam_byId : function(id, cb){
 			var query = `select id, name, code, level_id, class_id, lesson_id,
-            state, starting_date, end_date, created_at, updated_at, flag
+            state, DATE_FORMAT(starting_date,'%Y-%')starting_date, DATE_FORMAT(end_date,'%Y-%m')end_date, created_at, updated_at, flag
 			from exams where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {
