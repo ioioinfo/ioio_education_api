@@ -128,11 +128,11 @@ exports.register = function(server, options, next) {
 			handler: function(request, reply){
                 var clas = request.payload.clas;
                 clas = JSON.parse(clas);
-                if (!clas.plan_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
+                if (!clas.classroom_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
                 || !clas.master_id || !clas.remarks || !clas.level_id) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
-                var plan_id = clas.plan_id;
+                var classroom_id = clas.classroom_id;
                 var name = clas.name;
                 var code = clas.code;
                 var state = clas.state;
@@ -143,7 +143,7 @@ exports.register = function(server, options, next) {
                 var remarks = clas.remarks;
                 var level_id = clas.level_id;
 
-				server.plugins['models'].classes.save_class(plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
+				server.plugins['models'].classes.save_class(classroom_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
 					if (result.affectedRows>0) {
 						return reply({"success":true,"service_info":service_info});
 					}else {
@@ -159,12 +159,12 @@ exports.register = function(server, options, next) {
             handler: function(request, reply){
                 var clas = request.payload.clas;
                 clas = JSON.parse(clas);
-                if (!clas.plan_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
+                if (!clas.classroom_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
                 || !clas.master_id || !clas.remarks || !clas.level_id || !clas.id) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
                 var id = clas.id;
-                var plan_id = clas.plan_id;
+                var classroom_id = clas.classroom_id;
                 var name = clas.name;
                 var code = clas.code;
                 var state = clas.state;
@@ -175,7 +175,7 @@ exports.register = function(server, options, next) {
                 var remarks = clas.remarks;
                 var level_id = clas.level_id;
 
-                server.plugins['models'].classes.update_class(id, plan_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
+                server.plugins['models'].classes.update_class(id, classroom_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
                     }else {
