@@ -16,6 +16,8 @@ exports.register = function(server, options, next){
     server.expose('exams', require('./exams.js')(server));
     server.expose('exams_records', require('./exams_records.js')(server));
     server.expose('education_plans', require('./education_plans.js')(server));
+    server.expose('subjects', require('./subjects.js')(server));
+
 
 
   next();

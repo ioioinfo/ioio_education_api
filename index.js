@@ -90,6 +90,9 @@ server.register([
     {
         register: require('./server/controller/education_plans_controller.js')
     },
+    {
+        register: require('./server/controller/subjects_controller.js')
+    },
 
 
 ], function () {
