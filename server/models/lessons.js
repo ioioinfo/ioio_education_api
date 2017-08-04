@@ -5,8 +5,7 @@ var lessons = function(server) {
 	return {
 		//获得所有班级
 		get_lessons : function(info, cb){
-            var query = `select id, plan_id, teacher_id, name, code, hours,
-			level_id, created_at, updated_at
+            var query = `select id, name, code, created_at, updated_at
             from lessons where flag = 0
             `;
 
@@ -42,15 +41,13 @@ var lessons = function(server) {
 			});
 		},
 		// 保存课程
-		save_lesson : function(plan_id, teacher_id, name, code, hours, level_id, cb){
-			var query = `insert into lessons (plan_id, teacher_id, name, code, hours, level_id, created_at, updated_at,  flag )
+		save_lesson : function(name, code, cb){
+			var query = `insert into lessons ( name, code, created_at, updated_at, flag )
 			values
-			(?, ?, ?, ?, ?,
-			?, now(), now(),
-			0
+			(?, ?, now(), now(), 0
 			)
 			`;
-			var coloums = [plan_id, teacher_id, name, code, hours, level_id];
+			var coloums = [ name, code];
 			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
@@ -61,13 +58,12 @@ var lessons = function(server) {
 			});
 		},
 		//更新
-		update_lesson:function(id, plan_id, teacher_id, name, code, hours, level_id, cb){
-			var query = `update lessons set plan_id =?, teacher_id =?, name =?,
-				code =?, hours = ?, level_id =?, updated_at = now()
+		update_lesson:function(id, name, code, cb){
+			var query = `update lessons set name =?,
+				code =?, updated_at = now()
 				where id = ? and flag = 0
 				`;
-			var coloums = [plan_id, teacher_id, name, code, hours, level_id, id
-			];
+			var coloums = [ name, code, id];
 			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
@@ -79,7 +75,7 @@ var lessons = function(server) {
 		},
 		//查询指定课程
 		search_lesson_byId : function(id, cb){
-			var query = `select id, plan_id, teacher_id, name, code, hours, level_id, created_at, updated_at, flag
+			var query = `select id, name, code, created_at, updated_at, flag
 			from lessons where flag = 0 and id = ?
 			`;
 			server.plugins['mysql'].query(query,[id],function(err, results) {
