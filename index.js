@@ -96,6 +96,10 @@ server.register([
     {
         register: require('./server/controller/classrooms_controller.js')
     },
+    {
+        register: require('./server/controller/timetables_controller.js')
+    },
+
 
 ], function () {
     //Start the server

@@ -18,6 +18,7 @@ exports.register = function(server, options, next){
     server.expose('education_plans', require('./education_plans.js')(server));
     server.expose('subjects', require('./subjects.js')(server));
     server.expose('classrooms', require('./classrooms.js')(server));
+    server.expose('timetables', require('./timetables.js')(server));
 
 
 
