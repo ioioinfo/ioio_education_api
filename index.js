@@ -99,7 +99,9 @@ server.register([
     {
         register: require('./server/controller/timetables_controller.js')
     },
-
+    {
+        register: require('./server/controller/schedules_controller.js')
+    },
 
 ], function () {
     //Start the server
