@@ -6,7 +6,7 @@ var timetables = function(server) {
 		//获得所有班级
 		get_timetables : function(info, cb){
             var query = `select id, name, starting_time, end_time, created_at, updated_at
-            from timetables where flag = 0
+            from timetables where flag = 0 order by starting_time asc
             `;
 
 			if (info.thisPage) {

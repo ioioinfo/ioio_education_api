@@ -5,8 +5,7 @@ var schedules = function(server) {
 	return {
 		//获得所有班级
 		get_schedules : function(info, cb){
-            var query = `select id, name, plan_id, time_id, class_id, day,
-            created_at, updated_at
+            var query = `select id, name, plan_id, time_id, class_id, day
             from schedules where flag = 0
             `;
 

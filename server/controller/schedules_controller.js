@@ -5,6 +5,15 @@ var eventproxy = require('eventproxy');
 var service_info = "edication service";
 var async = require('async');
 
+var day_map = {
+	"星期一":{},
+	"星期二":{},
+	"星期三":{},
+	"星期四":{},
+	"星期五":{},
+	"星期六":{},
+	"星期天":{}
+};
 var do_get_method = function(url,cb){
 	uu_request.get(url, function(err, response, body){
 		if (!err && response.statusCode === 200) {
@@ -51,8 +60,10 @@ exports.register = function(server, options, next) {
                     info = JSON.parse(params);
                 }
 				var info2 = {};
-                var ep =  eventproxy.create("rows", "num","plans","times","classes",
-					function(rows, num, plans, times, classes){
+                var ep =  eventproxy.create("rows", "num","plans","times","classes","time",
+					function(rows, num, plans, times, classes,time){
+						var schedule_map = {};
+						var time_map = [];
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (plans[row.plan_id]) {
@@ -63,14 +74,50 @@ exports.register = function(server, options, next) {
                                 // row.time = times[row.time_id];
 								row.starting_time = times[row.time_id].starting_time;
 								row.end_time = times[row.time_id].end_time;
+								row.stage = row.starting_time+"-"+row.end_time;
                             }
 							if (classes[row.class_id]) {
                                 // row.class = classes[row.class_id];
 								row.class_name = classes[row.class_id].name;
                             }
-
+							if (day_map[row.day]) {
+								schedule_map[row.day] = row;
+							}
                         }
-					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
+						var day_list = ["星期一","星期二","星期三","星期四","星期五","星期六","星期天"]
+						for (var i = 0; i < time.length; i++) {
+							var ti = time[i];
+							var tim = ti.starting_time+"-"+ti.end_time;
+							var obj = {};
+							obj[tim]= {
+								"星期一":{},
+								"星期二":{},
+								"星期三":{},
+								"星期四":{},
+								"星期五":{},
+								"星期六":{},
+								"星期天":{}
+							};
+							time_map.push(obj);
+						}
+						for (var i = 0; i < rows.length; i++) {
+							var row = rows[i];
+							for (var j = 0; j < time_map.length; j++) {
+								var time_list = time_map[j];
+								if (time_list[row.stage]) {
+									var obj = time_list[row.stage];
+									for (var l = 0; l < day_list.length; l++) {
+										var one_day = day_list[l];
+										if (row.day == one_day) {
+											obj[one_day] = row;
+											break;
+										}
+									}
+								}
+							}
+						}
+
+					return reply({"success":true,"time_map":time_map,"service_info":service_info});
 				});
                 //查询所有课程
                 server.plugins['models'].schedules.get_schedules(info,function(err,rows){
@@ -108,8 +155,10 @@ exports.register = function(server, options, next) {
 							times_map[rows[i].id] = rows[i];
 						}
 						ep.emit("times", times_map);
+						ep.emit("time", rows);
 					}else {
 						ep.emit("times", {});
+						ep.emit("time", []);
 					}
 				});
 
