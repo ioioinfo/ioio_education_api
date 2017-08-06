@@ -88,8 +88,7 @@ exports.register = function(server, options, next) {
 						for (var i = 0; i < time.length; i++) {
 							var ti = time[i];
 							var tim = ti.starting_time+"-"+ti.end_time;
-							var obj = {};
-							obj[tim]= {
+							var obj = {"time":tim,"v":{
 								"星期一":{},
 								"星期二":{},
 								"星期三":{},
@@ -97,15 +96,15 @@ exports.register = function(server, options, next) {
 								"星期五":{},
 								"星期六":{},
 								"星期天":{}
-							};
+							}};
 							time_map.push(obj);
 						}
 						for (var i = 0; i < rows.length; i++) {
 							var row = rows[i];
 							for (var j = 0; j < time_map.length; j++) {
 								var time_list = time_map[j];
-								if (time_list[row.stage]) {
-									var obj = time_list[row.stage];
+								if (time_list.time == row.stage) {
+									var obj = time_list.v;
 									for (var l = 0; l < day_list.length; l++) {
 										var one_day = day_list[l];
 										if (row.day == one_day) {
