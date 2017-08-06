@@ -102,6 +102,9 @@ server.register([
     {
         register: require('./server/controller/schedules_controller.js')
     },
+    {
+        register: require('./server/controller/change_class_controller.js')
+    },
 
 ], function () {
     //Start the server
