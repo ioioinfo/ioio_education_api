@@ -329,6 +329,123 @@ exports.register = function(server, options, next) {
 				});
 			}
 		},
+		//更新完整一个班的课程表
+		{
+			method: 'POST',
+			path: '/update_schedules_byClass_id',
+			handler: function(request, reply){
+				var class_id = request.payload.class_id;
+				var subArray = request.payload.subArray;
+				subArray = JSON.parse(subArray);
+				var schedules_list = [];
+				for (var i = 0; i < subArray.length; i++) {
+					var sub = subArray[i];
+					var time_id = sub.id;
+					var schedules = sub.schedules;
+					if (schedules.val1 && schedules.val1!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val1,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期一"
+						};
+						schedules_list.push(schedule);
+					}
+					if (schedules.val2 && schedules.val2!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val2,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期二"
+						};
+						schedules_list.push(schedule);
+					}
+					if (schedules.val3 && schedules.val3!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val3,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期三"
+						};
+						schedules_list.push(schedule);
+					}
+					if (schedules.val4 && schedules.val4!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val4,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期四"
+						};
+						schedules_list.push(schedule);
+					}
+					if (schedules.val5 && schedules.val5!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val5,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期五"
+						};
+						schedules_list.push(schedule);
+					}
+					if (schedules.val6 && schedules.val6!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val6,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期六"
+						};
+						schedules_list.push(schedule);
+					}
+					if (schedules.val7 && schedules.val7!="") {
+						var schedule = {
+							"name":"课程",
+							"plan_id":schedules.val7,
+							"time_id":time_id,
+							"class_id":class_id,
+							"day":"星期天"
+						};
+						schedules_list.push(schedule);
+					}
+				}
+
+				var save_fail = 0;
+				var save_success = [];
+                async.each(schedules_list, function(schedule, cb) {
+					server.plugins['models'].schedules.save_schedule(schedule,  function(err,result){
+						if (result.affectedRows>0) {
+							save_success.push(result.insertId);
+                            cb();
+						}else {
+							console.log(result.message);
+                            save_fail = save_fail + 1;
+                            cb();
+						}
+					});
+                }, function(err) {
+
+					server.plugins['models'].schedules.delete_schedule_byClass_id(
+						class_id, save_success, function(err,result){
+						if (result.affectedRows>0) {
+							return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"fail_num":save_fail});
+
+						}else {
+							return reply({"success":false,"message":result.message,"service_info":service_info});
+						}
+					});
+
+                });
+
+
+			}
+		},
+
+
 
     ]);
 

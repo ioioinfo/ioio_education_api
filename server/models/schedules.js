@@ -102,6 +102,21 @@ var schedules = function(server) {
 				cb(false,results);
 			});
 		},
+		//删除课程根据班级id
+		delete_schedule_byClass_id:function(class_id, ids, cb){
+			var query = `update schedules set flag = 1, updated_at = now()
+				where class_id = ? and flag =0 and id not in (?);
+				`;
+			server.plugins['mysql'].query(query, [class_id,ids], function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
+
 
 	};
 };

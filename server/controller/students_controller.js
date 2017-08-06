@@ -126,7 +126,7 @@ exports.register = function(server, options, next) {
                             save_success.push(student.name);
                             cb();
     					}else {
-                            console.log(content.message);
+                            console.log(result.message);
                             save_fail.push(student.name);
                             cb();
     					}
