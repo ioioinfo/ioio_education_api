@@ -88,7 +88,7 @@ exports.register = function(server, options, next) {
 						for (var i = 0; i < time.length; i++) {
 							var ti = time[i];
 							var tim = ti.starting_time+"-"+ti.end_time;
-							var obj = {"time":tim,"v":{
+							var obj = {"time":tim,"time_id":ti.id,"v":{
 								"星期一":{},
 								"星期二":{},
 								"星期三":{},
@@ -431,7 +431,7 @@ exports.register = function(server, options, next) {
 
 					server.plugins['models'].schedules.delete_schedule_byClass_id(
 						class_id, save_success, function(err,result){
-						if (result.affectedRows>0) {
+						if (!err) {
 							return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"fail_num":save_fail});
 
 						}else {
