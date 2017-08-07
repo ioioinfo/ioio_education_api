@@ -296,8 +296,17 @@ exports.register = function(server, options, next) {
 			path: '/search_students_byId',
 			handler: function(request, reply) {
 				var id = request.query.class_id;
-				var ep =  eventproxy.create("rows",
-					function(rows){
+				var info2 = {};
+				var ep =  eventproxy.create("rows","students",
+					function(rows,students){
+						for (var i = 0; i < rows.length; i++) {
+							var row = rows[i];
+							if (students[row.student_id]) {
+								row.sex = students[row.student_id].sex;
+								row.phone = students[row.student_id].phone;
+								row.address = students[row.student_id].address;
+							}
+						}
 					return reply({"success":true,"rows":rows,"num":rows.length,"service_info":service_info});
 				});
 				//查询所有班级
@@ -308,6 +317,18 @@ exports.register = function(server, options, next) {
 						ep.emit("rows", []);
 					}
 				});
+				server.plugins['models'].students.get_students(info2,function(err,rows){
+					if (!err) {
+						var student_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							student_map[rows[i].id] = rows[i];
+						}
+						ep.emit("students", student_map);
+					}else {
+						ep.emit("students", {});
+					}
+				});
+
 			}
 		},
 		//查询可以添加到班级的学员
