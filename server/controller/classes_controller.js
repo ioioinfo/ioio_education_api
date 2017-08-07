@@ -37,6 +37,8 @@ var do_result = function(err,result,cb){
 		cb(true,null);
 	}
 };
+
+
 exports.register = function(server, options, next) {
 
     server.route([
@@ -374,47 +376,69 @@ exports.register = function(server, options, next) {
 						if (rows.length==0) {
 							return reply({"success":false,"message":"没有有学员升班","service_info":service_info});
 						}
-						var save_fail = [];
-						var save_success = [];
-		                async.each(rows, function(row, cb) {
-							var student_id = row.student_id;
-							server.plugins['models'].students.search_student_byId(student_id,function(err,rows){
-		    					if (!err) {
-									var student_name = rows[0].name;
-									server.plugins['models'].classes_infos.add_students(class_id2,student_id,student_name,function(err,result){
-				    					if (result.affectedRows>0) {
-											var change_info = {
-						                        "class_id1":class_id1,
-						                        "class_id2":class_id2,
-						                        "student_id":student_id,
-						                        "type":"升班"
-						                    }
-						                    server.plugins['models'].change_class_infos.save_change_class_info(change_info,function(err,result){
-						    					if (result.affectedRows>0) {
-						                            save_success.push(student_id);
-						                            cb();
-						    					}else {
-						                            console.log(content.message);
-						                            save_fail.push(student_id);
-						                            cb();
-						    					}
-						    				});
-				    					}else {
-				                            console.log(result.message);
-				                            save_fail.push(student_id);
-				                            cb();
-				    					}
-				    				});
-		    					}else {
-									console.log(rows.message);
-		                            save_fail.push(student_id);
-		                            cb();
-		    					}
-		    				});
-		                }, function(err) {
-		                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
-		                });
+						server.plugins['models'].classes_infos.search_students_byId(class_id2,function(err,results){
+							if (!err) {
+								var stu_map = {};
+								if (results.length>0) {
+									for (var i = 0; i < rows.length; i++) {
+										var student1_id = rows[i].student_id;
+										for (var j = 0; j < results.length; j++) {
+											var student2_id = results[j].student_id;
+											if (student1_id == student2_id) {
+												stu_map[student1_id] = results[j];
+											}
+										}
+									}
+								}
+								var save_fail = [];
+								var save_success = [];
+				                async.each(rows, function(row, cb) {
+									var student_id = row.student_id;
+									if (stu_map[student_id]) {
+										cb();
+									}else {
+										server.plugins['models'].students.search_student_byId(student_id,function(err,rows){
+					    					if (!err) {
+												var student_name = rows[0].name;
+												server.plugins['models'].classes_infos.add_students(class_id2,student_id,student_name,function(err,result){
+							    					if (result.affectedRows>0) {
+														var change_info = {
+									                        "class_id1":class_id1,
+									                        "class_id2":class_id2,
+									                        "student_id":student_id,
+									                        "type":"升班"
+									                    }
+									                    server.plugins['models'].change_class_infos.save_change_class_info(change_info,function(err,result){
+									    					if (result.affectedRows>0) {
+									                            save_success.push(student_id);
+									                            cb();
+									    					}else {
+									                            console.log(content.message);
+									                            save_fail.push(student_id);
+									                            cb();
+									    					}
+									    				});
+							    					}else {
+							                            console.log(result.message);
+							                            save_fail.push(student_id);
+							                            cb();
+							    					}
+							    				});
+					    					}else {
+												console.log(rows.message);
+					                            save_fail.push(student_id);
+					                            cb();
+					    					}
+					    				});
+									}
+				                }, function(err) {
+				                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
+				                });
 
+							}else {
+								return reply({"success":false,"message":results.message,"service_info":service_info});
+							}
+						});
 					}else {
 						return reply({"success":false,"message":rows.message,"service_info":service_info});
 					}
