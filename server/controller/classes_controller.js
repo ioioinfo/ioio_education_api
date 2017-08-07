@@ -392,9 +392,11 @@ exports.register = function(server, options, next) {
 								}
 								var save_fail = [];
 								var save_success = [];
+								var repeat_fail = [];
 				                async.each(rows, function(row, cb) {
 									var student_id = row.student_id;
 									if (stu_map[student_id]) {
+										repeat_fail.push(student_id);
 										cb();
 									}else {
 										server.plugins['models'].students.search_student_byId(student_id,function(err,rows){
@@ -432,7 +434,7 @@ exports.register = function(server, options, next) {
 					    				});
 									}
 				                }, function(err) {
-				                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length});
+				                    return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length,"save_repeat":repeat_fail,"repeat_num":repeat_fail.length});
 				                });
 
 							}else {
@@ -446,7 +448,97 @@ exports.register = function(server, options, next) {
 
 			}
 		},
+		//转班接口
+		{
+			method: 'POST',
+			path: '/change_classAndStudents',
+			handler: function(request, reply){
+				var class_id1 = request.payload.class_id1;
+				var class_id2 = request.payload.class_id2;
+                var student_ids = request.payload.student_ids;
+				student_ids = JSON.parse(student_ids);
+				if (!class_id1||!class_id1) {
+					return reply({"success":false,"message":"class_id null","service_info":service_info});
+				}
+				if (student_ids.length==0) {
+					return reply({"success":false,"message":"student_id null","service_info":service_info});
+				}
+				server.plugins['models'].classes_infos.search_students_byId(class_id2,function(err,results){
+					if (!err) {
+						var stu_map = {};
+						if (results.length>0) {
+							for (var i = 0; i < student_ids.length; i++) {
+								var student1_id = student_ids[i];
+								for (var j = 0; j < results.length; j++) {
+									var student2_id = results[j].student_id;
+									if (student1_id == student2_id) {
+										stu_map[student1_id] = results[j];
+									}
+								}
+							}
+						}
+						var save_fail = [];
+						var save_success = [];
+						var repeat_fail = [];
+						async.each(student_ids, function(student_id, cb) {
+							if (stu_map[student_id]) {
+								repeat_fail.push(student_id);
+								cb();
+							}else {
+								server.plugins['models'].students.search_student_byId(student_id,function(err,rows){
+									if (!err) {
+										var student_name = rows[0].name;
+										server.plugins['models'].classes_infos.add_students(class_id2,student_id,student_name,function(err,result){
+											if (result.affectedRows>0) {
+												var change_info = {
+													"class_id1":class_id1,
+													"class_id2":class_id2,
+													"student_id":student_id,
+													"type":"转班"
+												}
+												server.plugins['models'].change_class_infos.save_change_class_info(change_info,function(err,result){
+													if (result.affectedRows>0) {
+														server.plugins['models'].classes_infos.delete_class_student(class_id1,student_id,function(err,result){
+									    					if (result.affectedRows>0) {
+									                            save_success.push(student_id);
+									                            cb();
+									    					}else {
+									                            console.log(result.message);
+									                            save_fail.push(student_id);
+									                            cb();
+									    					}
+									    				});
+													}else {
+														console.log(content.message);
+														save_fail.push(student_id);
+														cb();
+													}
+												});
+											}else {
+												console.log(result.message);
+												save_fail.push(student_id);
+												cb();
+											}
+										});
+									}else {
+										console.log(rows.message);
+										save_fail.push(student_id);
+										cb();
+									}
+								});
+							}
+						}, function(err) {
+							return reply({"success":true,"success_num":save_success.length,"service_info":service_info,"save_fail":save_fail,"fail_num":save_fail.length,"save_repeat":repeat_fail,"repeat_num":repeat_fail.length});
+						});
 
+					}else {
+						return reply({"success":false,"message":rows.message,"service_info":service_info});
+					}
+				});
+
+
+			}
+		},
 
     ]);
 
