@@ -178,8 +178,16 @@ exports.register = function(server, options, next) {
 			handler: function(request, reply){
                 var plan = request.payload.plan;
                 plan = JSON.parse(plan);
-                if (!plan.class_id|| !plan.name || !plan.code|| !plan.hours|| !plan.teacher_id|| !plan.assistant_id ||!plan.subject_id||!plan.starting_date|| !plan.end_date) {
+                if (!plan.class_id|| !plan.name || !plan.code|| !plan.hours|| !plan.teacher_id|| !plan.assistant_id ||!plan.subject_id||!plan.starting_date|| !plan.end_date||!plan.classroom_id) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+
+				var arr1 = plan.starting_date.split("-");
+                var arr2 = plan.end_date.split("-");
+                var date1 = new Date(parseInt(arr1[0]),parseInt(arr1[1])-1,parseInt(arr1[2]),0,0,0);
+                var date2 = new Date(parseInt(arr2[0]),parseInt(arr2[1])-1,parseInt(arr2[2]),0,0,0);
+                if(date1.getTime()>date2.getTime()) {
+                    return reply({"success":false,"message":"结束日期不能小于开始日期","service_info":service_info});
                 }
 
                 // var plan = {
@@ -213,8 +221,16 @@ exports.register = function(server, options, next) {
                 var plan = request.payload.plan;
                 plan = JSON.parse(plan);
 
-                if (!plan.class_id|| !plan.name || !plan.code|| !plan.hours|| !plan.teacher_id|| !plan.assistant_id ||!plan.subject_id||!plan.starting_date|| !plan.end_date|| !plan.id) {
+                if (!plan.class_id|| !plan.name || !plan.code|| !plan.hours|| !plan.teacher_id|| !plan.assistant_id ||!plan.subject_id||!plan.starting_date|| !plan.end_date|| !plan.id || !plan.classroom_id) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
+                }
+
+				var arr1 = plan.starting_date.split("-");
+                var arr2 = plan.end_date.split("-");
+                var date1 = new Date(parseInt(arr1[0]),parseInt(arr1[1])-1,parseInt(arr1[2]),0,0,0);
+                var date2 = new Date(parseInt(arr2[0]),parseInt(arr2[1])-1,parseInt(arr2[2]),0,0,0);
+                if(date1.getTime()>date2.getTime()) {
+                    return reply({"success":false,"message":"结束日期不能小于开始日期","service_info":service_info});
                 }
 
 				server.plugins['models'].education_plans.update_education_plan(plan, function(err,result){

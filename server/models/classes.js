@@ -43,15 +43,15 @@ var classes = function(server) {
         },
 
 		// 保存班级
-        save_class : function(classroom_id, name, code, state, starting_date, end_date, 	class_master, master_id, remarks, level_id, cb){
-    		var query = `insert into classes (classroom_id, name, code, state, starting_date,  end_date, class_master, master_id, remarks, level_id, created_at, updated_at,  flag )
+        save_class : function( name, code, state, starting_date, end_date, 	class_master, master_id, remarks, level_id, cb){
+    		var query = `insert into classes (name, code, state, starting_date,  end_date, class_master, master_id, remarks, level_id, created_at, updated_at,  flag )
 			values
-			(?, ?, ?, ?, ?,
+			(?, ?, ?, ?,
 			?, ?, ?, ?, ?, now(), now(),
 			0
 			)
             `;
-            var coloums = [classroom_id, name, code, state, starting_date,
+            var coloums = [name, code, state, starting_date,
 				end_date, class_master, master_id, remarks, level_id];
     		server.plugins['mysql'].query(query, coloums, function(err, results) {
     			if (err) {

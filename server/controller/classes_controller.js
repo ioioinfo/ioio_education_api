@@ -130,11 +130,21 @@ exports.register = function(server, options, next) {
 			handler: function(request, reply){
                 var clas = request.payload.clas;
                 clas = JSON.parse(clas);
-                if (!clas.classroom_id || !clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
+                if (!clas.name || !clas.code ||!clas.state || !clas.starting_date || !clas.end_date || !clas.class_master
                 || !clas.master_id || !clas.remarks || !clas.level_id) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
-                var classroom_id = clas.classroom_id;
+
+				var arr1 = clas.starting_date.split("-");
+                var arr2 = clas.end_date.split("-");
+                var date1 = new Date(parseInt(arr1[0]),parseInt(arr1[1])-1,parseInt(arr1[2]),0,0,0);
+                var date2 = new Date(parseInt(arr2[0]),parseInt(arr2[1])-1,parseInt(arr2[2]),0,0,0);
+                if(date1.getTime()>date2.getTime()) {
+                    return reply({"success":false,"message":"结束日期不能小于开始日期","service_info":service_info});
+                }
+
+
+                // var classroom_id = clas.classroom_id;
                 var name = clas.name;
                 var code = clas.code;
                 var state = clas.state;
@@ -145,7 +155,7 @@ exports.register = function(server, options, next) {
                 var remarks = clas.remarks;
                 var level_id = clas.level_id;
 
-				server.plugins['models'].classes.save_class(classroom_id, name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
+				server.plugins['models'].classes.save_class(name, code, state, starting_date, end_date, class_master, master_id, remarks, level_id, function(err,result){
 					if (result.affectedRows>0) {
 						return reply({"success":true,"service_info":service_info});
 					}else {
@@ -165,6 +175,17 @@ exports.register = function(server, options, next) {
                 || !clas.master_id || !clas.remarks || !clas.level_id || !clas.id) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
+				
+				var arr1 = clas.starting_date.split("-");
+				var arr2 = clas.end_date.split("-");
+				var date1 = new Date(parseInt(arr1[0]),parseInt(arr1[1])-1,parseInt(arr1[2]),0,0,0);
+				var date2 = new Date(parseInt(arr2[0]),parseInt(arr2[1])-1,parseInt(arr2[2]),0,0,0);
+				if(date1.getTime()>date2.getTime()) {
+					return reply({"success":false,"message":"结束日期不能小于开始日期","service_info":service_info});
+				}
+
+
+
                 var id = clas.id;
                 var classroom_id = clas.classroom_id;
                 var name = clas.name;
