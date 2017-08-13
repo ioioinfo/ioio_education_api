@@ -102,7 +102,22 @@ var exams_records = function(server) {
 				cb(false,results);
 			});
 		},
-
+		//学员查询所有成绩历史
+		search_record_by_student : function(student_id, cb){
+			var query = `select id, exam_id,  student_id,  state,  score,
+            created_at, updated_at, flag
+			from exams_records where flag = 0
+			and student_id = ? order by created_at desc
+			`;
+			server.plugins['mysql'].query(query,[student_id],function(err, results) {
+				if (err) {
+					console.log(err);
+					cb(true,results);
+					return;
+				}
+				cb(false,results);
+			});
+		},
 
 	};
 };

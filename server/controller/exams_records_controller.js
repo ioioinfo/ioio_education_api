@@ -236,6 +236,67 @@ exports.register = function(server, options, next) {
                 });
             }
         },
+		//根据id查询考试
+		{
+			method: "GET",
+			path: '/search_record_by_student',
+			handler: function(request, reply) {
+				var student_id = request.query.student_id;
+				if (!student_id) {
+					return reply({"success":false,"message":"student_id null","service_info":service_info});
+				}
+				var info2 = {};
+				var ep =  eventproxy.create("rows", "exams", "students",
+					function(rows, exams, students){
+						for (var i = 0; i < rows.length; i++) {
+							var row = rows[i];
+							if (exams[row.exam_id]) {
+								row.exam = exams[row.exam_id];
+								row.exam_name = exams[row.exam_id].name;
+							}
+							if (students[row.student_id]) {
+								row.student = students[row.student_id];
+								row.student_name = students[row.student_id].name;
+							}
+						}
+					return reply({"success":true,"rows":rows,"service_info":service_info});
+				});
+				//查询考试记录
+				server.plugins['models'].exams_records.search_record_by_student(student_id,function(err,rows){
+					if (!err) {
+						ep.emit("rows", rows);
+					}else {
+						ep.emit("rows", []);
+					}
+				});
+				//查询所有考试
+				server.plugins['models'].exams.get_exams(info2,function(err,rows){
+					if (!err) {
+						var exams_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							exams_map[rows[i].id] = rows[i];
+						}
+						ep.emit("exams", exams_map);
+					}else {
+						ep.emit("exams", {});
+					}
+				});
+
+				//查询所有学生
+				server.plugins['models'].students.get_students(info2,function(err,rows){
+					if (!err) {
+						var students_map = {};
+						for (var i = 0; i < rows.length; i++) {
+							students_map[rows[i].id] = rows[i];
+						}
+						ep.emit("students", students_map);
+					}else {
+						ep.emit("students", {});
+					}
+				});
+			}
+		},
+
 
     ]);
 
