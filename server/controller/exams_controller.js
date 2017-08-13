@@ -51,8 +51,8 @@ exports.register = function(server, options, next) {
 					info = JSON.parse(params);
 				}
 				var info2 = {};
-                var ep =  eventproxy.create("rows","grades","num", "classes", "lessons",
-					function(rows, grades, num, classes, lessons){
+                var ep =  eventproxy.create("rows","grades","num", "classes",
+					function(rows, grades, num, classes){
                         for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (grades[row.level_id]) {
@@ -62,10 +62,6 @@ exports.register = function(server, options, next) {
                             if (classes[row.class_id]) {
                                 row.class = classes[row.class_id];
 								row.class_name = classes[row.class_id].name;
-                            }
-                            if (lessons[row.lesson_id]) {
-                                row.lessons = lessons[row.lesson_id];
-								row.lesson_name = lessons[row.lesson_id].name;
                             }
                         }
 					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
@@ -111,18 +107,6 @@ exports.register = function(server, options, next) {
 					}
 				});
 
-                //查询所有课程
-                server.plugins['models'].lessons.get_lessons(info2,function(err,rows){
-                    if (!err) {
-                        var lessons_map = {};
-						for (var i = 0; i < rows.length; i++) {
-							lessons_map[rows[i].id] = rows[i];
-						}
-						ep.emit("lessons", lessons_map);
-					}else {
-						ep.emit("lessons", {});
-					}
-				});
             }
         },
         //考试添加
@@ -134,7 +118,7 @@ exports.register = function(server, options, next) {
                 exam = JSON.parse(exam);
 
 				if (!exam.name || !exam.code || !exam.level_id || !exam.class_id
-                || !exam.lesson_id || !exam.state || !exam.starting_date || !exam.end_date) {
+                || !exam.state || !exam.starting_date || !exam.end_date) {
 					return reply({"success":false,"message":"params wrong","service_info":service_info});
 				}
 
@@ -176,8 +160,8 @@ exports.register = function(server, options, next) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
 				var info2 = {};
-                var ep =  eventproxy.create("rows", "grades", "classes", "lessons",
-                    function(rows, grades, classes, lessons){
+                var ep =  eventproxy.create("rows", "grades", "classes",
+                    function(rows, grades, classes){
 						for (var i = 0; i < rows.length; i++) {
                             var row = rows[i];
                             if (grades[row.level_id]) {
@@ -185,9 +169,6 @@ exports.register = function(server, options, next) {
                             }
                             if (classes[row.class_id]) {
                                 row.class = classes[row.class_id];
-                            }
-                            if (lessons[row.lesson_id]) {
-                                row.lessons = lessons[row.lesson_id];
                             }
                         }
                     return reply({"success":true,"rows":rows,"service_info":service_info});
@@ -226,18 +207,6 @@ exports.register = function(server, options, next) {
 					}
 				});
 
-                //查询所有课程
-                server.plugins['models'].lessons.get_lessons(info2,function(err,rows){
-                    if (!err) {
-                        var lessons_map = {};
-						for (var i = 0; i < rows.length; i++) {
-							lessons_map[rows[i].id] = rows[i];
-						}
-						ep.emit("lessons", lessons_map);
-					}else {
-						ep.emit("lessons", {});
-					}
-				});
             }
         },
         //更新考试信息
@@ -249,7 +218,7 @@ exports.register = function(server, options, next) {
                 exam = JSON.parse(exam);
 
 				if (!exam.name || !exam.code || !exam.level_id || !exam.class_id
-                || !exam.lesson_id || !exam.state || !exam.starting_date || !exam.end_date || !exam.id) {
+                || !exam.state || !exam.starting_date || !exam.end_date || !exam.id) {
 					return reply({"success":false,"message":"params wrong","service_info":service_info});
 				}
 

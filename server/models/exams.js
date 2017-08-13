@@ -71,13 +71,13 @@ var exams = function(server) {
 		},
         // 保存考试
         save_exam : function(exam, cb){
-            var query = `insert into exams (name, code, level_id, class_id, lesson_id, state, starting_date, end_date, created_at, updated_at, flag )
+            var query = `insert into exams (name, code, level_id, class_id, state, starting_date, end_date, created_at, updated_at, flag )
             values
             (?, ?, ?, ?, ?,
-            ?, ?, ?, now(), now(), 0
+            ?, ?, now(), now(), 0
             )
             `;
-            var coloums = [exam.name, exam.code, exam.level_id, exam.class_id, exam.lesson_id, exam.state, exam.starting_date, exam.end_date];
+            var coloums = [exam.name, exam.code, exam.level_id, exam.class_id, exam.state, exam.starting_date, exam.end_date];
             server.plugins['mysql'].query(query, coloums, function(err, results) {
                 if (err) {
                     console.log(err);
@@ -89,12 +89,14 @@ var exams = function(server) {
         },
         //更新信息
 		update_exam:function(exam, cb){
-				var query = `update exams set name = ?, code = ?, level_id = ?, class_id = ?, lesson_id = ?, state = ?, starting_date = ?,
+				var query = `update exams set name = ?, code = ?, level_id = ?,
+				class_id = ?, state = ?, starting_date = ?,
 				end_date = ?, updated_at = now()
 				where id = ? and flag =0
 				`;
 			var coloums = [exam.name, exam.code, exam.level_id,
-				exam.class_id, exam.lesson_id, exam.state, exam.starting_date, exam.end_date, exam.id];
+				exam.class_id, exam.state, exam.starting_date,
+				exam.end_date, exam.id];
 			server.plugins['mysql'].query(query, coloums, function(err, results) {
 				if (err) {
 					console.log(err);
