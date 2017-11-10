@@ -111,7 +111,9 @@ server.register([
     {
         register: require('./server/controller/driving_students_controller.js')
     },
-
+    {
+        register: require('./server/controller/register_results_controller.js')
+    },
 
 ], function () {
     //Start the server
