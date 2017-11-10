@@ -43,7 +43,7 @@ exports.register = function(server, options, next) {
         //查询注册学员列表
         {
             method: "GET",
-            path: '/get_driving_registers',
+            path: '/get_driving_students',
             handler: function(request, reply) {
 				var params = request.query.params;
 				var info = {};
@@ -57,7 +57,7 @@ exports.register = function(server, options, next) {
 					return reply({"success":true,"rows":rows,"num":num,"service_info":service_info});
 				});
                 //查询学员
-                server.plugins['models'].driving_registers.get_driving_registers(info,function(err,rows){
+                server.plugins['models'].driving_students.get_driving_students(info,function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
 					}else {
@@ -65,7 +65,7 @@ exports.register = function(server, options, next) {
 					}
 				});
 				//查询学员数量
-                server.plugins['models'].driving_registers.account_driving_registers(info,function(err,rows){
+                server.plugins['models'].driving_students.account_driving_students(info,function(err,rows){
                     if (!err) {
 						ep.emit("num", rows[0].num);
 					}else {
@@ -77,7 +77,7 @@ exports.register = function(server, options, next) {
         //注册学员添加，批量
         {
 			method: 'POST',
-			path: '/save_driving_register',
+			path: '/save_driving_student',
 			handler: function(request, reply){
                 var students = request.payload.students;
                 students = JSON.parse(students);
@@ -85,16 +85,18 @@ exports.register = function(server, options, next) {
                     return reply({"success":false,"message":"students wrong","service_info":service_info});
                 }
                 // var student = {
-                //     "certificate_type" : "A",
-                //     "certification_number" : "310226199103023322",
-                //     "student_name" : "孙楠",
-                //     "skill_number" : "310040614080",
-                //     "exam_point" : "B331",
-                //     "exam_car_type" : "C1",
-                //     "exam_items" : "2",
-                //     "car_plate" : "沪E701232",
-                //     "coach_identification" : "310226199003023321",
+                //     "fleet_code" : "A",
+                //     "name" : "孙楠",
+                //     "identification" : "310226199103023322",
+                //     "origin" : "光明",
+                //     "phone" : "18221036881",
+                //     "car_plate" : "C沪E701232",
                 //     "coach_name" : "郑东方",
+                //     "car_type" : "C1",
+                //     "is_waitijian" : "是",
+                //     "contract_number" : "郑东方",
+                //     "exam_pay" : 1200,
+                //     "remark" : "没有",
                 //     "sex" : "男",
                 //     "address" : "浦南路1005弄201"
                 // };
@@ -103,7 +105,7 @@ exports.register = function(server, options, next) {
                 var save_fail = [];
 				var save_success = [];
                 async.each(students, function(student, cb) {
-                    server.plugins['models'].driving_registers.save_driving_register(student,function(err,result){
+                    server.plugins['models'].driving_students.save_driving_student(student,function(err,result){
     					if (result.affectedRows>0) {
                             save_success.push(student.name);
                             cb();
@@ -121,14 +123,14 @@ exports.register = function(server, options, next) {
         //删除注册学员
         {
             method: 'POST',
-            path: '/delete_driving_register',
+            path: '/delete_driving_student',
             handler: function(request, reply){
                 var id = request.payload.id;
                 if (!id) {
                     return reply({"success":false,"message":"id null","service_info":service_info});
                 }
 
-                server.plugins['models'].driving_registers.delete_driving_register(id, function(err,result){
+                server.plugins['models'].driving_students.delete_driving_student(id, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
                     }else {
@@ -140,7 +142,7 @@ exports.register = function(server, options, next) {
         //根据id查注册学员
         {
             method: "GET",
-            path: '/search_register_by_id',
+            path: '/search_driving_student_by_id',
             handler: function(request, reply) {
                 var id = request.query.id;
 				if (!id) {
@@ -152,7 +154,7 @@ exports.register = function(server, options, next) {
 					return reply({"success":true,"rows":rows,"service_info":service_info});
 				});
                 //查询学员
-                server.plugins['models'].driving_registers.search_register_by_id(id,function(err,rows){
+                server.plugins['models'].driving_students.search_driving_student_by_id(id,function(err,rows){
                     if (!err) {
 						ep.emit("rows", rows);
 					}else {
@@ -164,29 +166,31 @@ exports.register = function(server, options, next) {
         //更新注册学员信息
         {
             method: 'POST',
-            path: '/update_driving_register',
+            path: '/update_driving_student',
             handler: function(request, reply){
                 var student = request.payload.student;
                 student = JSON.parse(student);
-                if (!student.id || !student.certificate_type || !student.certification_number || !student.student_name || !student.skill_number || !student.exam_point || !student.exam_car_type || !student.exam_items || !student.car_plate || !student.coach_identification || !student.coach_name || !student.sex || !student.address) {
+                if (!student.id || !student.fleet_code || !student.name || !student.identification || !student.phone || !student.origin || !student.car_plate || !student.coach_name || !student.car_type || !student.is_waitijian || !student.contract_number || !student.exam_pay || !student.remark || !student.sex || !student.address) {
                     return reply({"success":false,"message":"params wrong","service_info":service_info});
                 }
                 // var student = {
-                //     "id":"5281ce60-c5e9-11e7-8a61-21c0e986d5cc",
-                //     "certificate_type" : "A",
-                //     "certification_number" : "310226199103023322",
-                //     "student_name" : "孙楠",
-                //     "skill_number" : "310040614080",
-                //     "exam_point" : "B331",
-                //     "exam_car_type" : "C2",
-                //     "exam_items" : "4",
-                //     "car_plate" : "沪E701232",
-                //     "coach_identification" : "310226199003023321",
-                //     "coach_name" : "郑东方",
+                //     "id":"6d7832b0-c5f6-11e7-9623-5b8df182927b",
+                //     "fleet_code" : "A",
+                //     "name" : "孙楠2",
+                //     "identification" : "310226199103023322",
+                //     "origin" : "光明",
+                //     "phone" : "18221036881",
+                //     "car_plate" : "C沪E701232",
+                //     "coach_name" : "郑方",
+                //     "car_type" : "C1",
+                //     "is_waitijian" : "是",
+                //     "contract_number" : "郑东方",
+                //     "exam_pay" : 1200,
+                //     "remark" : "没有",
                 //     "sex" : "男",
                 //     "address" : "浦南路1005弄201"
                 // };
-                server.plugins['models'].driving_registers.update_driving_register(student, function(err,result){
+                server.plugins['models'].driving_students.update_driving_student(student, function(err,result){
                     if (result.affectedRows>0) {
                         return reply({"success":true,"service_info":service_info});
                     }else {
@@ -202,5 +206,5 @@ exports.register = function(server, options, next) {
 }
 
 exports.register.attributes = {
-    name: "driving_registers_controller"
+    name: "driving_students_controller"
 };
